@@ -1,39 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
-
-interface HeroOverlayProps {
-  progress: number;
-}
-
-export default function HeroOverlay({ progress }: HeroOverlayProps) {
-  const phase = useMemo(() => {
-    if (progress < 0.12) return 'tyres';
-    if (progress < 0.38) return 'breaking';
-    if (progress < 0.55) return 'fragments';
-    if (progress < 0.85) return 'forming';
-    return 'complete';
-  }, [progress]);
-
-  const initialOpacity = progress < 0.12
-    ? 1 - progress / 0.12
-    : 0;
-
-  const finalOpacity = progress > 0.78
-    ? (progress - 0.78) / 0.22
-    : 0;
-
-  const ctaOpacity = progress > 0.88
-    ? (progress - 0.88) / 0.12
-    : 0;
-
+export default function HeroOverlay() {
   return (
-    <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between">
-      {/* Top: Initial tagline — fades out as particles gather */}
-      <div
-        className="pt-[15vh] px-6 md:px-16 lg:px-24"
-        style={{ opacity: initialOpacity }}
-      >
+    <div className="relative flex-1 md:flex-none md:absolute md:inset-0 md:flex md:items-center pointer-events-none z-10">
+      <div className="max-w-xl px-6 py-8 md:py-0 md:px-16 lg:px-24">
         <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] max-w-[14ch]">
           WHAT&apos;S LEFT BEHIND
           <br />
@@ -41,28 +11,12 @@ export default function HeroOverlay({ progress }: HeroOverlayProps) {
           <br />
           FORWARD.
         </h1>
-        <p className="mt-6 font-body text-sm md:text-base text-zneako-sand/70 max-w-md tracking-wide">
-          Scroll to discover
-        </p>
-      </div>
 
-      {/* Bottom: Final state — fades in as shoe forms */}
-      <div
-        className="pb-[12vh] px-6 md:px-16 lg:px-24"
-        style={{ opacity: finalOpacity }}
-      >
-        <p className="font-display text-lg md:text-2xl lg:text-3xl font-semibold tracking-tight text-zneako-cream mb-3">
-          GIVING RUBBER A SECOND LIFE.
-        </p>
-        <p className="font-body text-sm md:text-base text-zneako-sand/80 max-w-lg leading-relaxed">
-          Durable children&apos;s trainers made with reclaimed tyre rubber.
+        <p className="mt-5 md:mt-6 font-body text-sm md:text-base text-zneako-sand/80 max-w-md leading-relaxed">
+          Turning end-of-life tyre rubber into durable children&apos;s footwear.
         </p>
 
-        {/* CTA */}
-        <div
-          className="mt-8 pointer-events-auto"
-          style={{ opacity: ctaOpacity }}
-        >
+        <div className="mt-8 pointer-events-auto">
           <a
             href="#discover"
             className="group inline-flex items-center gap-3 font-display text-sm md:text-base font-semibold tracking-[0.15em] uppercase text-zneako-cream border border-zneako-sand/30 px-8 py-4 rounded-sm transition-all duration-500 hover:bg-zneako-sand/10 hover:border-zneako-sand/60"
@@ -73,16 +27,13 @@ export default function HeroOverlay({ progress }: HeroOverlayProps) {
             </span>
           </a>
         </div>
-      </div>
 
-      {/* Scroll progress indicator */}
-      <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
-        <div className="w-px h-24 bg-zneako-sand/20 relative overflow-hidden">
-          <div
-            className="absolute top-0 left-0 w-full bg-zneako-sand/60 transition-none"
-            style={{ height: `${progress * 100}%` }}
-          />
-        </div>
+        <p className="mt-10 font-display text-xs md:text-sm font-semibold tracking-[0.15em] uppercase text-zneako-sand/50">
+          Giving rubber a second life.
+        </p>
+        <p className="mt-2 font-body text-xs text-zneako-sand/40 max-w-sm leading-relaxed">
+          Developed with the University of Bradford&apos;s Polymer Institute.
+        </p>
       </div>
     </div>
   );

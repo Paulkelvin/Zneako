@@ -7,9 +7,10 @@ import TyrePile from './TyrePile';
 
 interface HeroSceneProps {
   progress: number;
+  playing: boolean;
 }
 
-export default function HeroScene({ progress }: HeroSceneProps) {
+export default function HeroScene({ progress, playing }: HeroSceneProps) {
   return (
     <Canvas
       camera={{
@@ -25,6 +26,7 @@ export default function HeroScene({ progress }: HeroSceneProps) {
         stencil: false,
       }}
       shadows="soft"
+      frameloop={playing ? 'always' : 'never'}
       dpr={[1, 1.5]}
       style={{
         position: 'absolute',
