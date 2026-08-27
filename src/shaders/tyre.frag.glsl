@@ -41,27 +41,31 @@ void main() {
   float edgeGlow = smoothstep(0.07, 0.0, edgeDist);
 
   // Tread pattern
-  // UV.x = around the ring, UV.y = around the tube cross-section
-  // UV.y=0 → outer surface (tread), UV.y=0.5 → inner surface
-  float crossAngle = vUv.y * 6.28318;
-  float outerFactor = cos(crossAngle);
-  float treadMask = smoothstep(0.15, 0.7, outerFactor);
+  // UV.x = around the ring. UV.y runs bead(0) -> tread crown(0.5) -> bead(1),
+  // matching the tyre profile's cross-section path.
+  float distFromCrown = abs(vUv.y - 0.5) * 2.0;
+  float treadMask = smoothstep(0.55, 0.15, distFromCrown);
+  float sidewallMask = smoothstep(0.7, 0.95, distFromCrown);
 
   // Circumferential grooves
   float grooves = sin(vUv.x * 140.0) * 0.5 + 0.5;
   grooves = smoothstep(0.3, 0.7, grooves);
 
-  // Lateral block pattern
-  float lateralFreq = crossAngle * 5.0 + vUv.x * 25.0;
+  // Lateral block pattern (lug spacing)
+  float lateralFreq = vUv.x * 54.0 * 6.28318;
   float lateral = sin(lateralFreq) * 0.5 + 0.5;
   lateral = smoothstep(0.35, 0.65, lateral);
 
   float treadPattern = grooves * lateral;
-  float treadDepth = (1.0 - treadPattern) * treadMask * 0.04;
+  float treadDepth = (1.0 - treadPattern) * treadMask * 0.05;
+
+  // Sidewall ribbing (faint concentric lines)
+  float sidewallRing = sin(distFromCrown * 60.0) * 0.5 + 0.5;
+  float sidewallDetail = smoothstep(0.4, 0.6, sidewallRing) * sidewallMask * 0.012;
 
   // Base rubber color
-  vec3 baseColor = vec3(0.09, 0.085, 0.08);
-  vec3 sidewallColor = baseColor + vec3(0.012, 0.01, 0.008);
+  vec3 baseColor = vec3(0.125, 0.117, 0.11);
+  vec3 sidewallColor = baseColor + vec3(0.01, 0.008, 0.006) - sidewallDetail;
   vec3 treadColor = baseColor * (1.0 - treadDepth * 4.0);
   vec3 color = mix(sidewallColor, treadColor, treadMask);
 
@@ -69,13 +73,18 @@ void main() {
   float wear = noise3D(vWorldPosition * 4.5) * 0.025;
   color += wear;
 
+  // Contact/crevice AO — darken deep into the bead near the axle and the
+  // shoulder transition, where light can't reach in a real stacked heap.
+  float crevice = smoothstep(0.85, 1.0, distFromCrown) * 0.5;
+  color *= 1.0 - crevice;
+
   // Lighting
   vec3 normal = normalize(vNormal);
   vec3 lightDir = normalize(vec3(0.5, 1.0, 0.3));
   vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 
   float NdotL = dot(normal, lightDir);
-  float diffuse = max((NdotL + 0.5) / 1.5, 0.12);
+  float diffuse = max((NdotL + 0.5) / 1.5, 0.22);
 
   float rim = 1.0 - max(dot(viewDir, normal), 0.0);
   rim = pow(rim, 3.0) * 0.35;
@@ -84,10 +93,15 @@ void main() {
   float spec = pow(max(dot(normal, halfDir), 0.0), 10.0) * 0.06;
 
   vec3 fillDir = normalize(vec3(-0.3, -0.5, 0.4));
-  float fill = max(dot(normal, fillDir) + 0.3, 0.0) * 0.15;
+  float fill = max(dot(normal, fillDir) + 0.3, 0.0) * 0.18;
 
-  vec3 ambient = vec3(0.04, 0.038, 0.035);
-  vec3 lit = color * (ambient + diffuse * 0.7 + fill);
+  // Camera-facing studio fill — keeps surfaces that edge away from the
+  // key light (tread bands turned side-on by the settled heap) from
+  // going flat black, like a soft box near the lens.
+  float camFill = max(dot(normal, viewDir), 0.0) * 0.3;
+
+  vec3 ambient = vec3(0.16, 0.153, 0.143);
+  vec3 lit = color * (ambient + diffuse * 0.85 + fill + camFill);
   lit += rim * vec3(0.18, 0.16, 0.13);
   lit += spec * vec3(0.2);
 

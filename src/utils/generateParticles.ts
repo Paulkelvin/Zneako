@@ -19,12 +19,17 @@ export interface TyreConfig {
 export const TYRE_MAJOR_R = 0.55;
 export const TYRE_MINOR_R = 0.17;
 
+// Baked from an offline cannon-es drop simulation (scripts/bake-tyre-pile.mjs,
+// seed 33) — tyres dropped onto a ground plane and left to settle under
+// gravity/friction so contacts, tilts and spread are physically plausible
+// rather than hand-placed.
 export const TYRE_CONFIGS: TyreConfig[] = [
-  { position: [-0.35, -0.55, 0.08], rotation: [Math.PI / 2, 0, 0.08], scale: 1.0 },
-  { position: [0.45, -0.45, 0.18], rotation: [Math.PI / 2 + 0.05, 0.18, -0.06], scale: 1.05 },
-  { position: [0.05, 0.0, -0.1], rotation: [0.5, 0.6, 0.12], scale: 0.95 },
-  { position: [0.25, 0.45, 0.1], rotation: [0.85, -0.22, 0.2], scale: 0.88 },
-  { position: [-0.45, 0.08, -0.3], rotation: [0.6, -0.42, -0.1], scale: 0.92 },
+  { position: [0.619, 0.099, -0.453], rotation: [1.529, 0.717, 0.039], scale: 0.971 },
+  { position: [0.009, -0.437, 0.728], rotation: [3.141, -0.945, 3.141], scale: 0.959 },
+  { position: [-0.467, 0.039, -0.264], rotation: [2.054, -1.0, 0.557], scale: 0.895 },
+  { position: [-0.21, 0.347, 0.504], rotation: [-2.391, -0.02, 0.166], scale: 1.011 },
+  { position: [-0.225, 0.428, -1.082], rotation: [-1.54, 0.262, -2.93], scale: 1.073 },
+  { position: [0.163, 0.324, -0.83], rotation: [-1.489, -0.014, -2.941], scale: 0.861 },
 ];
 
 function rotateEulerXYZ(
@@ -64,9 +69,12 @@ function createTyreStartPositions(particleCount: number, scale: number): Float32
         r = minorR * Math.sqrt(Math.random());
       }
 
+      // Canonical torus with its hole axis along Y — matches the
+      // cannon-es cylinder axis used to bake TYRE_CONFIGS and the
+      // (unrotated) LatheGeometry axis in TyrePile.
       const lx = (majorR + r * Math.cos(v)) * Math.cos(u);
-      const ly = (majorR + r * Math.cos(v)) * Math.sin(u);
-      const lz = r * Math.sin(v);
+      const lz = (majorR + r * Math.cos(v)) * Math.sin(u);
+      const ly = r * Math.sin(v);
 
       const [rx, ry, rz] = rotateEulerXYZ(
         lx, ly, lz,

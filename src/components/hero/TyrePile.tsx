@@ -13,14 +13,70 @@ interface TyrePileProps {
 
 const SCENE_SCALE = 1.4;
 
+// Real tyre cross-section: bead near the axle, tapered sidewall, rounded
+// shoulder, flat-ish tread crown — not a circular tube like a torus.
+function createTyreProfile(): THREE.Vector2[] {
+  const innerR = TYRE_MAJOR_R - TYRE_MINOR_R * 0.85;
+  const halfWidth = TYRE_MINOR_R * 1.1;
+  const outerR = TYRE_MAJOR_R + TYRE_MINOR_R;
+
+  return [
+    new THREE.Vector2(innerR, -halfWidth),
+    new THREE.Vector2(TYRE_MAJOR_R * 0.8, -halfWidth * 0.96),
+    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.55, -halfWidth * 0.62),
+    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.12, -halfWidth * 0.34),
+    new THREE.Vector2(outerR, -halfWidth * 0.14),
+    new THREE.Vector2(outerR + TYRE_MINOR_R * 0.02, 0),
+    new THREE.Vector2(outerR, halfWidth * 0.14),
+    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.12, halfWidth * 0.34),
+    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.55, halfWidth * 0.62),
+    new THREE.Vector2(TYRE_MAJOR_R * 0.8, halfWidth * 0.96),
+    new THREE.Vector2(innerR, halfWidth),
+  ];
+}
+
+function createTyreGeometry(): THREE.BufferGeometry {
+  const geo = new THREE.LatheGeometry(createTyreProfile(), 64);
+
+  const pos = geo.attributes.position;
+  const uv = geo.attributes.uv;
+  const arr = pos.array as Float32Array;
+  const NUM_LUGS = 54;
+
+  for (let i = 0; i < pos.count; i++) {
+    const x = arr[i * 3];
+    const y = arr[i * 3 + 1];
+    const z = arr[i * 3 + 2];
+    const u = uv.getX(i);
+    const v = uv.getY(i);
+
+    const radial = Math.sqrt(x * x + z * z) || 1;
+    const nx = x / radial;
+    const nz = z / radial;
+
+    // Crown weighting — how close this vertex is to the tread center.
+    const crown = THREE.MathUtils.smoothstep(1.0 - Math.abs(v - 0.5) * 2.0, 0.55, 0.98);
+
+    const lug = Math.sin(u * Math.PI * 2 * NUM_LUGS);
+    const lugBump = (Math.max(lug, 0.0) - 0.5) * 0.014 * crown;
+
+    const grain = (Math.sin(u * 240.7 + v * 130.3) * 0.5 + 0.5 - 0.5) * 0.004;
+
+    const displacement = lugBump + grain;
+    arr[i * 3] = x + nx * displacement;
+    arr[i * 3 + 2] = z + nz * displacement;
+  }
+
+  pos.needsUpdate = true;
+  geo.computeVertexNormals();
+  return geo;
+}
+
 export default function TyrePile({ progress }: TyrePileProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const progressRef = useRef(0);
 
-  const geometry = useMemo(
-    () => new THREE.TorusGeometry(TYRE_MAJOR_R, TYRE_MINOR_R, 24, 48),
-    []
-  );
+  const geometry = useMemo(() => createTyreGeometry(), []);
 
   const material = useMemo(
     () =>
@@ -60,9 +116,21 @@ export default function TyrePile({ progress }: TyrePileProps) {
           ]}
           rotation={cfg.rotation}
           scale={cfg.scale * SCENE_SCALE}
+          castShadow
+          receiveShadow
         />
       ))}
       <primitive object={material} ref={materialRef} />
+
+      {/* Contact shadow / grounding plane */}
+      <mesh
+        position={[0.0, -0.42 * SCENE_SCALE, 0.0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        receiveShadow
+      >
+        <planeGeometry args={[6, 6]} />
+        <shadowMaterial transparent opacity={0.45} />
+      </mesh>
     </group>
   );
 }
