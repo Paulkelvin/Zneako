@@ -9,6 +9,7 @@
   --color-sand: #C8B891;
   --color-gold: #D4A843;
   --color-cream: #F5F0E8;
+  --color-green: #4A7C59;
 }
 
 * {
@@ -30,4 +31,56 @@ body {
 ::selection {
   background: var(--color-sand);
   color: var(--color-black);
+}
+
+/*
+ * shadcn/ui tokens, mapped to the Zneako brand palette above rather than
+ * the generated neutral default. The site never switches theme, so there's
+ * a single :root definition instead of a .dark variant.
+ */
+@layer base {
+  :root {
+    --background: var(--color-black);
+    --foreground: var(--color-cream);
+    --card: var(--color-charcoal);
+    --card-foreground: var(--color-cream);
+    --popover: var(--color-charcoal);
+    --popover-foreground: var(--color-cream);
+    --primary: var(--color-gold);
+    --primary-foreground: var(--color-black);
+    --secondary: var(--color-rubber);
+    --secondary-foreground: var(--color-cream);
+    --muted: var(--color-rubber);
+    --muted-foreground: var(--color-sand);
+    --accent: var(--color-sand);
+    --accent-foreground: var(--color-black);
+    --destructive: #d8534f;
+    --destructive-foreground: var(--color-cream);
+    --border: #c8b89133;
+    --input: #c8b89140;
+    --ring: var(--color-gold);
+    --chart-1: var(--color-gold);
+    --chart-2: var(--color-sand);
+    --chart-3: var(--color-green);
+    --chart-4: var(--color-rubber);
+    --chart-5: var(--color-cream);
+    --radius: 0.5rem;
+    --sidebar: var(--color-charcoal);
+    --sidebar-foreground: var(--color-cream);
+    --sidebar-primary: var(--color-gold);
+    --sidebar-primary-foreground: var(--color-black);
+    --sidebar-accent: var(--color-rubber);
+    --sidebar-accent-foreground: var(--color-cream);
+    --sidebar-border: #c8b89133;
+    --sidebar-ring: var(--color-gold);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
