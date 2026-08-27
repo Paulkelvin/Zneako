@@ -1,6 +1,6 @@
 'use client';
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { Suspense } from 'react';
 import RubberParticleSystem from './RubberParticleSystem';
 import TyrePile from './TyrePile';
@@ -8,6 +8,21 @@ import TyrePile from './TyrePile';
 interface HeroSceneProps {
   progress: number;
   playing: boolean;
+}
+
+function HeroContent({ progress }: { progress: number }) {
+  const { viewport } = useThree();
+  // Offset as a fraction of the visible width so the subject sits well
+  // clear of the left-anchored text on wide screens without being pushed
+  // out of frame on mobile's much narrower aspect ratio.
+  const offsetX = Math.min(viewport.width * 0.2, 2.4);
+
+  return (
+    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -1.0, 0]}>
+      <TyrePile progress={progress} />
+      <RubberParticleSystem progress={progress} particleCount={5000} />
+    </group>
+  );
 }
 
 export default function HeroScene({ progress, playing }: HeroSceneProps) {
@@ -37,10 +52,7 @@ export default function HeroScene({ progress, playing }: HeroSceneProps) {
     >
       <color attach="background" args={['#0A0A0A']} />
       <Suspense fallback={null}>
-        <group rotation={[0.15, -0.4, 0.03]} position={[0.8, -1.0, 0]}>
-          <TyrePile progress={progress} />
-          <RubberParticleSystem progress={progress} particleCount={5000} />
-        </group>
+        <HeroContent progress={progress} />
       </Suspense>
       <ambientLight intensity={0.6} color="#E8E0D8" />
       <directionalLight

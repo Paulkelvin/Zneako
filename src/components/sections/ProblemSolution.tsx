@@ -97,8 +97,8 @@ export default function ProblemSolution() {
         </h2>
       </div>
 
-      <div className="mt-16 md:mt-20 max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
-        <div>
+      <div className="mt-16 md:mt-20 flex flex-col md:flex-row md:justify-between md:items-start gap-10 md:gap-16">
+        <div className="max-w-xl">
           <TagPill label="Problem" icon={<Circle className="w-3 h-3" strokeWidth={3} />} />
           <div className="mt-4 rounded-lg border border-zneako-sand/10 bg-zneako-rubber/25 p-8 md:p-10">
             <p className="font-display text-4xl md:text-5xl font-bold text-zneako-cream">
@@ -132,12 +132,12 @@ export default function ProblemSolution() {
           </div>
         </div>
 
-        <div className="md:sticky md:top-28">
+        <div className="w-full md:w-80 lg:w-96 shrink-0 md:sticky md:top-28">
           <TransformationPlaceholder />
         </div>
       </div>
 
-      <div className="mt-16 md:mt-20 max-w-4xl">
+      <div className="mt-16 md:mt-20 max-w-6xl">
         <TagPill label="In Practice" />
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {PILLARS.map((pillar) => (
