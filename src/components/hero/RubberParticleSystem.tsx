@@ -104,6 +104,10 @@ export default function RubberParticleSystem({
       'scale',
       new THREE.InstancedBufferAttribute(particleData.scales, 1)
     );
+    geo.setAttribute(
+      'formationOrder',
+      new THREE.InstancedBufferAttribute(particleData.formationOrder, 1)
+    );
   }, [particleData, responsiveCount]);
 
   useFrame((state) => {

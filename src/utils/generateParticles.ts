@@ -4,8 +4,86 @@ export interface ParticleData {
   animSeeds: Float32Array;
   dampFactors: Float32Array;
   scales: Float32Array;
+  formationOrder: Float32Array;
   count: number;
 }
+
+// ── Tyre pile configuration ──
+
+export interface TyreConfig {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: number;
+}
+
+export const TYRE_MAJOR_R = 0.55;
+export const TYRE_MINOR_R = 0.17;
+
+export const TYRE_CONFIGS: TyreConfig[] = [
+  { position: [-0.35, -0.55, 0.08], rotation: [Math.PI / 2, 0, 0.08], scale: 1.0 },
+  { position: [0.45, -0.45, 0.18], rotation: [Math.PI / 2 + 0.05, 0.18, -0.06], scale: 1.05 },
+  { position: [0.05, 0.0, -0.1], rotation: [0.5, 0.6, 0.12], scale: 0.95 },
+  { position: [0.25, 0.45, 0.1], rotation: [0.85, -0.22, 0.2], scale: 0.88 },
+  { position: [-0.45, 0.08, -0.3], rotation: [0.6, -0.42, -0.1], scale: 0.92 },
+];
+
+function rotateEulerXYZ(
+  x: number, y: number, z: number,
+  rx: number, ry: number, rz: number
+): [number, number, number] {
+  const x1 = x;
+  const y1 = y * Math.cos(rx) - z * Math.sin(rx);
+  const z1 = y * Math.sin(rx) + z * Math.cos(rx);
+  const x2 = x1 * Math.cos(ry) + z1 * Math.sin(ry);
+  const y2 = y1;
+  const z2 = -x1 * Math.sin(ry) + z1 * Math.cos(ry);
+  const x3 = x2 * Math.cos(rz) - y2 * Math.sin(rz);
+  const y3 = x2 * Math.sin(rz) + y2 * Math.cos(rz);
+  return [x3, y3, z2];
+}
+
+function createTyreStartPositions(particleCount: number, scale: number): Float32Array {
+  const positions = new Float32Array(particleCount * 3);
+  const perTyre = Math.floor(particleCount / TYRE_CONFIGS.length);
+
+  for (let t = 0; t < TYRE_CONFIGS.length; t++) {
+    const cfg = TYRE_CONFIGS[t];
+    const start = t * perTyre;
+    const count = t === TYRE_CONFIGS.length - 1 ? particleCount - start : perTyre;
+    const majorR = TYRE_MAJOR_R * cfg.scale;
+    const minorR = TYRE_MINOR_R * cfg.scale;
+
+    for (let i = 0; i < count; i++) {
+      const u = Math.random() * Math.PI * 2;
+      const v = Math.random() * Math.PI * 2;
+
+      let r: number;
+      if (Math.random() < 0.6) {
+        r = minorR * (0.82 + Math.random() * 0.18);
+      } else {
+        r = minorR * Math.sqrt(Math.random());
+      }
+
+      const lx = (majorR + r * Math.cos(v)) * Math.cos(u);
+      const ly = (majorR + r * Math.cos(v)) * Math.sin(u);
+      const lz = r * Math.sin(v);
+
+      const [rx, ry, rz] = rotateEulerXYZ(
+        lx, ly, lz,
+        cfg.rotation[0], cfg.rotation[1], cfg.rotation[2]
+      );
+
+      const idx = (start + i) * 3;
+      positions[idx] = (rx + cfg.position[0]) * scale;
+      positions[idx + 1] = (ry + cfg.position[1]) * scale;
+      positions[idx + 2] = (rz + cfg.position[2]) * scale;
+    }
+  }
+
+  return positions;
+}
+
+// ── Shoe profile ──
 
 function isInsideShoeProfile(x: number, y: number): boolean {
   const soleBottom = x > 1.2 ? (x - 1.2) * 0.5 : 0;
@@ -32,36 +110,27 @@ function getUpperBound(x: number): number {
   return 0.2;
 }
 
-// Shoe side profile as a polyline (x, y) — normalized to ~[-1.6, 1.6] x [0, 1.2]
-// Traced clockwise: toe → sole bottom → heel → heel counter → collar → tongue → toe top
 const SHOE_PROFILE = [
-  // Toe front (rounded)
   [1.5, 0.35],
   [1.55, 0.25],
   [1.5, 0.12],
-  // Sole bottom — flat
   [1.3, 0.05],
   [0.8, 0.0],
   [0.0, 0.0],
   [-0.8, 0.0],
   [-1.2, 0.02],
-  // Heel bottom
   [-1.45, 0.05],
   [-1.5, 0.12],
-  // Heel counter — rises steeply
   [-1.48, 0.3],
   [-1.42, 0.55],
   [-1.35, 0.8],
   [-1.25, 0.95],
-  // Collar / ankle opening
   [-1.1, 1.05],
   [-0.85, 1.1],
   [-0.6, 1.08],
   [-0.35, 1.0],
-  // Tongue peak
   [-0.1, 0.95],
   [0.15, 0.85],
-  // Vamp slopes down to toe
   [0.5, 0.7],
   [0.8, 0.58],
   [1.1, 0.48],
@@ -81,20 +150,14 @@ function sampleProfilePoint(): [number, number] {
 }
 
 function getShoeWidthAtPoint(x: number, y: number): number {
-  // Width varies along length and height
   let baseWidth: number;
-  if (x < -1.0) baseWidth = 0.28;        // Heel
-  else if (x < 0.0) baseWidth = 0.4;     // Midfoot
-  else if (x < 0.8) baseWidth = 0.42;    // Forefoot
-  else baseWidth = 0.35 - (x - 0.8) * 0.15; // Toe taper
+  if (x < -1.0) baseWidth = 0.28;
+  else if (x < 0.0) baseWidth = 0.4;
+  else if (x < 0.8) baseWidth = 0.42;
+  else baseWidth = 0.35 - (x - 0.8) * 0.15;
 
-  // Narrow toward top
   const heightNarrow = 1.0 - Math.max(0, y - 0.3) * 0.35;
   return baseWidth * heightNarrow;
-}
-
-function isInsideSoleRegion(x: number, y: number): boolean {
-  return y >= -0.02 && y <= 0.22 && x >= -1.5 && x <= 1.5;
 }
 
 function createShoeShape(particleCount: number): Float32Array {
@@ -105,14 +168,11 @@ function createShoeShape(particleCount: number): Float32Array {
   const soleCount = Math.floor(particleCount * 0.20);
   const interiorCount = particleCount - surfaceCount - soleCount;
 
-  // Surface particles — on the shoe outline extruded in Z
   for (let i = 0; i < surfaceCount; i++) {
     const [px, py] = sampleProfilePoint();
     const width = getShoeWidthAtPoint(px, py);
-    // Place on the surface — at the edge of the width
     const angle = Math.random() * Math.PI * 2;
     const pz = Math.sin(angle) * width;
-    // Slight jitter inward for thickness
     const jitter = (Math.random() - 0.5) * 0.06;
 
     positions.push(
@@ -122,10 +182,8 @@ function createShoeShape(particleCount: number): Float32Array {
     );
   }
 
-  // Sole particles — dense flat bottom
   for (let i = 0; i < soleCount; i++) {
     const px = -1.45 + Math.random() * 2.9;
-    // Check if x is within sole range
     const soleEnd = px > 1.2 ? 1.5 : 1.55;
     if (px > soleEnd) { i--; continue; }
 
@@ -136,7 +194,6 @@ function createShoeShape(particleCount: number): Float32Array {
     positions.push(px * scale, (py - 0.4) * scale, pz * scale);
   }
 
-  // Interior fill — distributed inside the shoe volume
   let interiorPlaced = 0;
   let interiorAttempts = 0;
   while (interiorPlaced < interiorCount && interiorAttempts < interiorCount * 15) {
@@ -152,7 +209,6 @@ function createShoeShape(particleCount: number): Float32Array {
     positions.push(px * scale, (py - 0.4) * scale, pz * scale);
     interiorPlaced++;
   }
-  // fallback
   while (interiorPlaced < interiorCount) {
     positions.push(
       (Math.random() * 2 - 1) * scale,
@@ -165,34 +221,19 @@ function createShoeShape(particleCount: number): Float32Array {
   return new Float32Array(positions);
 }
 
-function createScatteredPositions(
-  particleCount: number,
-  shoePositions: Float32Array,
-  spreadRadius: number = 7
-): Float32Array {
-  const positions = new Float32Array(particleCount * 3);
-
-  for (let i = 0; i < particleCount; i++) {
-    const i3 = i * 3;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    const r = 1.5 + Math.pow(Math.random(), 0.5) * spreadRadius;
-
-    positions[i3] = r * Math.sin(phi) * Math.cos(theta);
-    positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.6 - 1.0;
-    positions[i3 + 2] = r * Math.cos(phi) * 0.7;
-  }
-
-  return positions;
-}
+// ── Main generator ──
 
 export function generateParticleData(particleCount: number): ParticleData {
   const endPositions = createShoeShape(particleCount);
-  const startPositions = createScatteredPositions(particleCount, endPositions);
+  const startPositions = createTyreStartPositions(particleCount, 1.4);
 
   const animSeeds = new Float32Array(particleCount * 3);
   const dampFactors = new Float32Array(particleCount);
   const scales = new Float32Array(particleCount);
+  const formationOrder = new Float32Array(particleCount);
+
+  const surfaceCount = Math.floor(particleCount * 0.40);
+  const soleCount = Math.floor(particleCount * 0.20);
 
   for (let i = 0; i < particleCount; i++) {
     const i3 = i * 3;
@@ -210,6 +251,19 @@ export function generateParticleData(particleCount: number): ParticleData {
     } else {
       scales[i] = 0.04 + Math.random() * 0.035;
     }
+
+    if (i >= surfaceCount && i < surfaceCount + soleCount) {
+      formationOrder[i] = Math.random() * 0.15;
+    } else if (i < surfaceCount) {
+      const py = endPositions[i3 + 1];
+      if (py < -0.2) {
+        formationOrder[i] = 0.1 + Math.random() * 0.2;
+      } else {
+        formationOrder[i] = 0.25 + Math.random() * 0.35;
+      }
+    } else {
+      formationOrder[i] = 0.4 + Math.random() * 0.4;
+    }
   }
 
   return {
@@ -218,6 +272,7 @@ export function generateParticleData(particleCount: number): ParticleData {
     animSeeds,
     dampFactors,
     scales,
+    formationOrder,
     count: particleCount,
   };
 }

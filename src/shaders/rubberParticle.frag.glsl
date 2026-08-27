@@ -5,6 +5,7 @@ varying vec3 vWorldPosition;
 varying float vProgress;
 varying float vRandomVal;
 varying vec3 vColor;
+varying float vReveal;
 
 uniform vec3 uLightDir;
 uniform float uTime;
@@ -48,7 +49,7 @@ void main() {
   vec3 fogColor = vec3(0.04, 0.038, 0.035);
   vec3 finalColor = mix(fogColor, lit, fog);
 
-  float alpha = mix(0.9, 1.0, vProgress);
+  float alpha = vReveal * mix(0.9, 1.0, vProgress);
 
   gl_FragColor = vec4(finalColor, alpha);
 }

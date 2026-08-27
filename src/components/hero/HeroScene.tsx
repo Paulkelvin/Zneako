@@ -3,6 +3,7 @@
 import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
 import RubberParticleSystem from './RubberParticleSystem';
+import TyrePile from './TyrePile';
 
 interface HeroSceneProps {
   progress: number;
@@ -34,6 +35,7 @@ export default function HeroScene({ progress }: HeroSceneProps) {
       <color attach="background" args={['#0A0A0A']} />
       <Suspense fallback={null}>
         <group rotation={[0.15, -0.4, 0.03]} position={[0.8, -1.0, 0]}>
+          <TyrePile progress={progress} />
           <RubberParticleSystem progress={progress} particleCount={5000} />
         </group>
       </Suspense>

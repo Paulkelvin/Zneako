@@ -8,22 +8,23 @@ interface HeroOverlayProps {
 
 export default function HeroOverlay({ progress }: HeroOverlayProps) {
   const phase = useMemo(() => {
-    if (progress < 0.15) return 'scattered';
-    if (progress < 0.5) return 'gathering';
-    if (progress < 0.8) return 'forming';
+    if (progress < 0.12) return 'tyres';
+    if (progress < 0.38) return 'breaking';
+    if (progress < 0.55) return 'fragments';
+    if (progress < 0.85) return 'forming';
     return 'complete';
   }, [progress]);
 
-  const initialOpacity = progress < 0.2
-    ? 1 - progress / 0.2
+  const initialOpacity = progress < 0.12
+    ? 1 - progress / 0.12
     : 0;
 
-  const finalOpacity = progress > 0.7
-    ? (progress - 0.7) / 0.3
+  const finalOpacity = progress > 0.78
+    ? (progress - 0.78) / 0.22
     : 0;
 
-  const ctaOpacity = progress > 0.85
-    ? (progress - 0.85) / 0.15
+  const ctaOpacity = progress > 0.88
+    ? (progress - 0.88) / 0.12
     : 0;
 
   return (
