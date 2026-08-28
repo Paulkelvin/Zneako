@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { sanityServerClient } from '@/lib/sanityServer';
+import { resend, WAITLIST_FROM_EMAIL } from '@/lib/resend';
+import { waitlistConfirmationEmail } from '@/lib/waitlistEmail';
 
 const AGE_RANGES = ['2-4', '5-7', '8-10', '11-13'];
 
@@ -94,6 +96,18 @@ export async function POST(req: NextRequest) {
 
   if (effectiveReferrer) {
     await sanityServerClient.patch(effectiveReferrer._id).inc({ referralCount: 1 }).commit();
+  }
+
+  if (resend) {
+    const { subject, html, text } = waitlistConfirmationEmail({
+      referralCode: created.referralCode,
+      origin: req.nextUrl.origin,
+    });
+    try {
+      await resend.emails.send({ from: WAITLIST_FROM_EMAIL, to: email, subject, html, text });
+    } catch (err) {
+      console.error('Failed to send waitlist confirmation email', err);
+    }
   }
 
   return NextResponse.json({
