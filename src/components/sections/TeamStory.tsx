@@ -1,12 +1,18 @@
+import Image from 'next/image';
 import { Award } from 'lucide-react';
 
 interface TeamMember {
   name: string;
   role: string;
+  photo?: string;
 }
 
 const TEAM: TeamMember[] = [
-  { name: 'Oluwabusayo Idowu', role: 'Co-Founder & Commercial Lead' },
+  {
+    name: 'Oluwabusayo Idowu',
+    role: 'Co-Founder & Commercial Lead',
+    photo: '/team/oluwabusayo-idowu.jpg',
+  },
   { name: 'Dr Rob Innie', role: 'CTO, Polymer Institute, University of Bradford' },
   { name: 'Professor Klaus Pors', role: 'Academic Co-Founder, Institute of Cancer Therapeutics' },
   { name: 'Bonnie Clyde', role: 'Innovation Officer' },
@@ -58,10 +64,20 @@ export default function TeamStory() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
           {TEAM.map((member) => (
             <div key={member.name} className="text-center">
-              <div className="aspect-square md:aspect-[4/5] rounded-lg bg-zneako-rubber/25 flex items-center justify-center">
-                <span className="font-display text-2xl font-bold text-zneako-gold/70">
-                  {initials(member.name)}
-                </span>
+              <div className="relative aspect-square md:aspect-[4/5] rounded-lg bg-zneako-rubber/25 overflow-hidden flex items-center justify-center">
+                {member.photo ? (
+                  <Image
+                    src={member.photo}
+                    alt={member.name}
+                    fill
+                    sizes="(min-width: 768px) 25vw, 50vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="font-display text-2xl font-bold text-zneako-gold/70">
+                    {initials(member.name)}
+                  </span>
+                )}
               </div>
               <p className="mt-4 font-display text-base font-semibold text-zneako-cream">
                 {member.name}
