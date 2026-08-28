@@ -3,14 +3,14 @@
 export default function HeroOverlay() {
   return (
     <div className="relative flex-1 md:flex-none md:absolute md:inset-0 md:flex md:items-center pointer-events-none z-10">
-      <div className="max-w-xl md:max-w-3xl lg:max-w-6xl px-6 py-8 md:py-0 md:px-16 lg:px-24">
-        <h1 className="font-display text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] text-white">
+      <div className="max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl px-6 py-8 md:py-0 md:px-16 lg:px-24">
+        <h1 className="font-display text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-[1.1] text-white">
           WHAT&apos;S LEFT BEHIND
           <br />
           CAN MOVE US FORWARD.
         </h1>
 
-        <p className="mt-5 md:mt-6 font-body text-sm md:text-base text-zneako-sand max-w-md leading-relaxed">
+        <p className="mt-5 md:mt-6 font-body text-base md:text-lg text-zneako-sand max-w-md leading-relaxed">
           Turning end-of-life tyre rubber into durable children&apos;s footwear.
         </p>
 

@@ -28,7 +28,7 @@ function Step({ step, index }: { step: (typeof STEPS)[number]; index: number }) 
             strokeWidth={1.5}
           />
         </div>
-        <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-6 h-6 rounded-full bg-white border border-black/10 font-body text-[10px] text-black/45">
+        <span className="absolute bottom-0.5 right-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-white border border-black/10 font-body text-[10px] text-black/45">
           {index + 1}
         </span>
       </div>
