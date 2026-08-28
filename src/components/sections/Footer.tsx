@@ -1,4 +1,4 @@
-import { Mail } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -13,8 +13,8 @@ export default function Footer() {
           </p>
         </div>
 
-        <div>
-          <p className="font-body text-xs tracking-[0.15em] uppercase text-zneako-sand/40 mb-3">
+        <div className="flex flex-col gap-3">
+          <p className="font-body text-xs tracking-[0.15em] uppercase text-zneako-sand/40 mb-1">
             Contact
           </p>
           <a
@@ -24,6 +24,17 @@ export default function Footer() {
             <Mail className="w-4 h-4" strokeWidth={1.75} />
             hello@zneako.com
           </a>
+          <a
+            href="tel:+440000000000"
+            className="inline-flex items-center gap-2 font-body text-sm text-zneako-sand/70 hover:text-zneako-gold transition-colors"
+          >
+            <Phone className="w-4 h-4" strokeWidth={1.75} />
+            +44 (0) 000 000 0000
+          </a>
+          <p className="inline-flex items-center gap-2 font-body text-sm text-zneako-sand/70">
+            <MapPin className="w-4 h-4 shrink-0" strokeWidth={1.75} />
+            Bradford, United Kingdom
+          </p>
         </div>
       </div>
 
