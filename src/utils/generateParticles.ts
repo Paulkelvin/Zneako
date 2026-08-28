@@ -17,7 +17,7 @@ export interface TyreConfig {
 }
 
 export const TYRE_MAJOR_R = 0.55;
-export const TYRE_MINOR_R = 0.17;
+export const TYRE_MINOR_R = 0.24;
 
 // Baked from an offline cannon-es drop simulation (scripts/bake-tyre-pile.mjs,
 // seed 33) — tyres dropped onto a ground plane and left to settle under

@@ -13,24 +13,26 @@ interface TyrePileProps {
 
 const SCENE_SCALE = 1.4;
 
-// Real tyre cross-section: bead near the axle, tapered sidewall, rounded
-// shoulder, flat-ish tread crown — not a circular tube like a torus.
+// Real car/truck tyre cross-section: narrow bead, steep near-vertical
+// sidewall, a distinct shoulder, then a WIDE FLAT tread band — not a single
+// rounded crown point, which is what reads as a thin bicycle/tricycle inner
+// tube rather than a chunky road tyre.
 function createTyreProfile(): THREE.Vector2[] {
-  const innerR = TYRE_MAJOR_R - TYRE_MINOR_R * 0.85;
-  const halfWidth = TYRE_MINOR_R * 1.1;
+  const innerR = TYRE_MAJOR_R - TYRE_MINOR_R * 0.92;
+  const halfWidth = TYRE_MINOR_R * 1.05;
   const outerR = TYRE_MAJOR_R + TYRE_MINOR_R;
+  const treadR = outerR - TYRE_MINOR_R * 0.03;
 
   return [
     new THREE.Vector2(innerR, -halfWidth),
-    new THREE.Vector2(TYRE_MAJOR_R * 0.8, -halfWidth * 0.96),
-    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.55, -halfWidth * 0.62),
-    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.12, -halfWidth * 0.34),
-    new THREE.Vector2(outerR, -halfWidth * 0.14),
-    new THREE.Vector2(outerR + TYRE_MINOR_R * 0.02, 0),
-    new THREE.Vector2(outerR, halfWidth * 0.14),
-    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.12, halfWidth * 0.34),
-    new THREE.Vector2(outerR - TYRE_MINOR_R * 0.55, halfWidth * 0.62),
-    new THREE.Vector2(TYRE_MAJOR_R * 0.8, halfWidth * 0.96),
+    new THREE.Vector2(TYRE_MAJOR_R * 0.96, -halfWidth * 0.93),
+    new THREE.Vector2(outerR * 0.93, -halfWidth * 0.68),
+    new THREE.Vector2(outerR * 0.985, -halfWidth * 0.4),
+    new THREE.Vector2(treadR, -halfWidth * 0.22),
+    new THREE.Vector2(treadR, halfWidth * 0.22),
+    new THREE.Vector2(outerR * 0.985, halfWidth * 0.4),
+    new THREE.Vector2(outerR * 0.93, halfWidth * 0.68),
+    new THREE.Vector2(TYRE_MAJOR_R * 0.96, halfWidth * 0.93),
     new THREE.Vector2(innerR, halfWidth),
   ];
 }
