@@ -36,16 +36,19 @@ function createTyreProfile(): THREE.Vector2[] {
 }
 
 function createTyreGeometry(): THREE.BufferGeometry {
-  const geo = new THREE.LatheGeometry(createTyreProfile(), 64);
+  // Gentle silhouette-only variation here — the fine tread block/groove
+  // pattern is bump-mapped in the fragment shader instead (see
+  // tyre.frag.glsl), since resolving 54 discrete lug blocks as real
+  // geometry needs far more segments than this scene can afford and
+  // aliases into a jagged "gear tooth" edge at anything less.
+  const geo = new THREE.LatheGeometry(createTyreProfile(), 96);
 
   const pos = geo.attributes.position;
   const uv = geo.attributes.uv;
   const arr = pos.array as Float32Array;
-  const NUM_LUGS = 54;
 
   for (let i = 0; i < pos.count; i++) {
     const x = arr[i * 3];
-    const y = arr[i * 3 + 1];
     const z = arr[i * 3 + 2];
     const u = uv.getX(i);
     const v = uv.getY(i);
@@ -54,17 +57,10 @@ function createTyreGeometry(): THREE.BufferGeometry {
     const nx = x / radial;
     const nz = z / radial;
 
-    // Crown weighting — how close this vertex is to the tread center.
-    const crown = THREE.MathUtils.smoothstep(1.0 - Math.abs(v - 0.5) * 2.0, 0.55, 0.98);
-
-    const lug = Math.sin(u * Math.PI * 2 * NUM_LUGS);
-    const lugBump = (Math.max(lug, 0.0) - 0.5) * 0.014 * crown;
-
     const grain = (Math.sin(u * 240.7 + v * 130.3) * 0.5 + 0.5 - 0.5) * 0.004;
 
-    const displacement = lugBump + grain;
-    arr[i * 3] = x + nx * displacement;
-    arr[i * 3 + 2] = z + nz * displacement;
+    arr[i * 3] = x + nx * grain;
+    arr[i * 3 + 2] = z + nz * grain;
   }
 
   pos.needsUpdate = true;

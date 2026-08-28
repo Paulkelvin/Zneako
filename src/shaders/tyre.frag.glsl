@@ -78,8 +78,29 @@ void main() {
   float crevice = smoothstep(0.85, 1.0, distFromCrown) * 0.5;
   color *= 1.0 - crevice;
 
-  // Lighting
+  // Bump-mapped tread relief: raised block tops, recessed grooves, and the
+  // sidewall ribs, all as a single height field. Perturbing the normal by
+  // this (via screen-space derivatives, so it works without a tangent
+  // attribute) lets diffuse/specular actually catch the pattern like real
+  // tread relief, instead of the flat painted-on look a color-only pattern
+  // gives — and unlike vertex displacement, it can't alias into jagged
+  // "gear teeth" no matter how fine the pattern is.
+  float treadHeight = (treadPattern - 0.5) * treadMask * 0.05;
+  float sidewallHeight = (sidewallRing - 0.5) * sidewallMask * 0.01;
+  float bumpHeight = treadHeight + sidewallHeight;
+
   vec3 normal = normalize(vNormal);
+  vec3 dPdx = dFdx(vWorldPosition);
+  vec3 dPdy = dFdy(vWorldPosition);
+  vec3 r1 = cross(dPdy, normal);
+  vec3 r2 = cross(normal, dPdx);
+  float det = dot(dPdx, r1);
+  float dHdx = dFdx(bumpHeight);
+  float dHdy = dFdy(bumpHeight);
+  vec3 surfGrad = sign(det) * (dHdx * r1 + dHdy * r2);
+  normal = normalize(abs(det) * normal - surfGrad);
+
+  // Lighting
   vec3 lightDir = normalize(vec3(0.5, 1.0, 0.3));
   vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 

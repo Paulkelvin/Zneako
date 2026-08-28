@@ -15,7 +15,7 @@ function HeroContent({ progress }: { progress: number }) {
   // Offset as a fraction of the visible width so the subject sits well
   // clear of the left-anchored text on wide screens without being pushed
   // out of frame on mobile's much narrower aspect ratio.
-  const offsetX = Math.min(viewport.width * 0.2, 2.4);
+  const offsetX = Math.min(viewport.width * 0.3, 3.6);
 
   return (
     <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -1.0, 0]}>
