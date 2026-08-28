@@ -1,9 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 
-const AGE_RANGES = ['2–4 yrs', '5–7 yrs', '8–10 yrs', '11–13 yrs'];
+const AGE_RANGES = [
+  { label: '2–4 yrs', value: '2-4' },
+  { label: '5–7 yrs', value: '5-7' },
+  { label: '8–10 yrs', value: '8-10' },
+  { label: '11–13 yrs', value: '11-13' },
+];
 const REFERRAL_GOAL = 5;
 
 function Perforation() {
@@ -31,16 +36,51 @@ function Perforation() {
   );
 }
 
+type SubmitState = 'idle' | 'loading' | 'success' | 'error';
+
 export default function Waitlist() {
   const [email, setEmail] = useState('');
   const [ageRange, setAgeRange] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [referrals] = useState(0);
+  const [state, setState] = useState<SubmitState>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [referralCode, setReferralCode] = useState('');
+  const [referralCount, setReferralCount] = useState(0);
+  const [refParam, setRefParam] = useState<string | null>(null);
+  const [origin, setOrigin] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    setRefParam(new URLSearchParams(window.location.search).get('ref'));
+    setOrigin(window.location.origin);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !ageRange) return;
-    setSubmitted(true);
+    if (!email || !ageRange || state === 'loading') return;
+
+    setState('loading');
+    setErrorMessage('');
+
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, ageRange, ref: refParam }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMessage(data.error ?? 'Something went wrong. Please try again.');
+        setState('error');
+        return;
+      }
+
+      setReferralCode(data.referralCode);
+      setReferralCount(data.referralCount ?? 0);
+      setState('success');
+    } catch {
+      setErrorMessage('Something went wrong. Please try again.');
+      setState('error');
+    }
   };
 
   return (
@@ -79,7 +119,7 @@ export default function Waitlist() {
 
         {/* Claim half */}
         <div className="flex-1 p-8 md:p-12 bg-zneako-black/30">
-          {!submitted ? (
+          {state !== 'success' ? (
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div>
                 <label
@@ -106,16 +146,16 @@ export default function Waitlist() {
                 <div className="flex flex-wrap gap-2">
                   {AGE_RANGES.map((range) => (
                     <button
-                      key={range}
+                      key={range.value}
                       type="button"
-                      onClick={() => setAgeRange(range)}
+                      onClick={() => setAgeRange(range.value)}
                       className={`rounded-full border px-4 py-1.5 font-body text-xs transition-colors ${
-                        ageRange === range
+                        ageRange === range.value
                           ? 'border-transparent bg-zneako-gold text-zneako-black'
                           : 'border-zneako-sand/20 text-zneako-sand/70 hover:border-zneako-sand/40'
                       }`}
                     >
-                      {range}
+                      {range.label}
                     </button>
                   ))}
                 </div>
@@ -123,12 +163,16 @@ export default function Waitlist() {
 
               <button
                 type="submit"
-                disabled={!email || !ageRange}
+                disabled={!email || !ageRange || state === 'loading'}
                 className="mt-2 inline-flex items-center justify-center gap-3 font-display text-sm font-semibold tracking-[0.15em] uppercase text-zneako-cream border border-zneako-sand/30 px-8 py-4 rounded-sm transition-all duration-500 hover:bg-zneako-sand/10 hover:border-zneako-sand/60 disabled:opacity-40 disabled:pointer-events-none"
               >
-                Claim Your Spot
+                {state === 'loading' ? 'Claiming…' : 'Claim Your Spot'}
                 <span aria-hidden>&rarr;</span>
               </button>
+
+              {state === 'error' && (
+                <p className="font-body text-xs text-red-400">{errorMessage}</p>
+              )}
 
               <p className="font-body text-xs text-zneako-sand/40 leading-relaxed">
                 By joining, you&apos;ll receive occasional updates about Zneako. No spam.
@@ -150,20 +194,20 @@ export default function Waitlist() {
                   Your referral link
                 </p>
                 <p className="mt-1 font-body text-sm text-zneako-gold truncate">
-                  zneako.vercel.app/?ref=you
+                  {origin.replace(/^https?:\/\//, '')}/?ref={referralCode}
                 </p>
               </div>
 
               <div>
                 <p className="font-body text-xs tracking-[0.1em] uppercase text-zneako-sand/50 mb-2">
-                  {referrals} of {REFERRAL_GOAL} referrals
+                  {referralCount} of {REFERRAL_GOAL} referrals
                 </p>
                 <div className="flex gap-1.5">
                   {Array.from({ length: REFERRAL_GOAL }).map((_, i) => (
                     <div
                       key={i}
                       className={`h-2 flex-1 rounded-sm ${
-                        i < referrals ? 'bg-zneako-gold' : 'bg-zneako-sand/15'
+                        i < referralCount ? 'bg-zneako-gold' : 'bg-zneako-sand/15'
                       }`}
                     />
                   ))}
