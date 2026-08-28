@@ -18,7 +18,7 @@ function HeroContent({ progress }: { progress: number }) {
   const offsetX = Math.min(viewport.width * 0.3, 3.6);
 
   return (
-    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -1.0, 0]}>
+    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -0.2, 0]} scale={0.85}>
       <TyrePile progress={progress} />
       <RubberParticleSystem progress={progress} particleCount={5000} />
     </group>

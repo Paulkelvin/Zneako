@@ -75,9 +75,11 @@ void main() {
   float sidewallRing = sin(distFromCrown * 60.0) * 0.5 + 0.5;
   float sidewallDetail = smoothstep(0.4, 0.6, sidewallRing) * sidewallMask * 0.012;
 
-  // Base rubber color
-  vec3 baseColor = vec3(0.125, 0.117, 0.11);
-  vec3 sidewallColor = baseColor + vec3(0.01, 0.008, 0.006) - sidewallDetail;
+  // Base rubber color — neutral charcoal, not the warm/brown tint this had
+  // before, which read as "old rubber" rather than a real tyre's matte
+  // near-black.
+  vec3 baseColor = vec3(0.1, 0.099, 0.098);
+  vec3 sidewallColor = baseColor + vec3(0.006, 0.006, 0.006) - sidewallDetail;
   vec3 treadColor = baseColor * (1.0 - treadDepth * 5.5);
   vec3 color = mix(sidewallColor, treadColor, treadMask);
 
