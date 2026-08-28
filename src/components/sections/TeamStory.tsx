@@ -61,7 +61,7 @@ export default function TeamStory() {
       </div>
 
       <div className="mt-16 md:mt-20 max-w-5xl mx-auto border-t border-zneako-sand/10 pt-16 md:pt-20">
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-10 md:overflow-visible">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-6 pl-10 pr-6 scroll-pl-10 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-10 md:overflow-visible">
           {TEAM.map((member) => (
             <div key={member.name} className="shrink-0 w-64 snap-start md:w-auto text-center">
               <div className="relative aspect-[4/5] rounded-lg bg-zneako-rubber/25 overflow-hidden flex items-center justify-center">
