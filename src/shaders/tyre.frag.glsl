@@ -47,17 +47,29 @@ void main() {
   float treadMask = smoothstep(0.55, 0.15, distFromCrown);
   float sidewallMask = smoothstep(0.7, 0.95, distFromCrown);
 
-  // Circumferential grooves
-  float grooves = sin(vUv.x * 140.0) * 0.5 + 0.5;
-  grooves = smoothstep(0.3, 0.7, grooves);
+  // Rib layout across the tread width, from a reference photo: a narrower,
+  // near-smooth centre rib flanked by two patterned "shoulder" ribs, split
+  // by a continuous circumferential groove — not one uniform block pattern
+  // running edge to edge.
+  float ribGrooveAt = 0.22;
+  float ribGroove = smoothstep(0.035, 0.01, abs(distFromCrown - ribGrooveAt));
+  float shoulderZone = smoothstep(ribGrooveAt, ribGrooveAt + 0.05, distFromCrown);
 
-  // Lateral block pattern (lug spacing)
-  float lateralFreq = vUv.x * 54.0 * 6.28318;
-  float lateral = sin(lateralFreq) * 0.5 + 0.5;
-  lateral = smoothstep(0.35, 0.65, lateral);
+  // Shoulder blocks: skewing the phase across vUv.y slants the block
+  // boundaries into the angled/chevron shape real tread blocks have,
+  // instead of dead-straight radial lug lines.
+  float skew = (vUv.y - 0.5) * 10.0;
+  float blockWave = sin((vUv.x * 46.0 + skew) * 6.28318) * 0.5 + 0.5;
+  float shoulderBlocks = smoothstep(0.4, 0.6, blockWave);
 
-  float treadPattern = grooves * lateral;
-  float treadDepth = (1.0 - treadPattern) * treadMask * 0.05;
+  // Centre rib: fine circumferential sipes, much lower contrast than the
+  // shoulder blocks — this rib reads as almost smooth, like the reference.
+  float centerWave = sin(vUv.x * 90.0) * 0.5 + 0.5;
+  float centerPattern = 1.0 - smoothstep(0.75, 0.85, centerWave) * 0.4;
+
+  float treadPattern = mix(centerPattern, shoulderBlocks, shoulderZone);
+  treadPattern = min(treadPattern, 1.0 - ribGroove);
+  float treadDepth = (1.0 - treadPattern) * treadMask * 0.06;
 
   // Sidewall ribbing (faint concentric lines)
   float sidewallRing = sin(distFromCrown * 60.0) * 0.5 + 0.5;
@@ -66,7 +78,7 @@ void main() {
   // Base rubber color
   vec3 baseColor = vec3(0.125, 0.117, 0.11);
   vec3 sidewallColor = baseColor + vec3(0.01, 0.008, 0.006) - sidewallDetail;
-  vec3 treadColor = baseColor * (1.0 - treadDepth * 4.0);
+  vec3 treadColor = baseColor * (1.0 - treadDepth * 5.5);
   vec3 color = mix(sidewallColor, treadColor, treadMask);
 
   // Wear variation
@@ -85,7 +97,7 @@ void main() {
   // tread relief, instead of the flat painted-on look a color-only pattern
   // gives — and unlike vertex displacement, it can't alias into jagged
   // "gear teeth" no matter how fine the pattern is.
-  float treadHeight = (treadPattern - 0.5) * treadMask * 0.05;
+  float treadHeight = (treadPattern - 0.5) * treadMask * 0.06;
   float sidewallHeight = (sidewallRing - 0.5) * sidewallMask * 0.01;
   float bumpHeight = treadHeight + sidewallHeight;
 
