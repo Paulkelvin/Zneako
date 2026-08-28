@@ -3,8 +3,8 @@
 export default function HeroOverlay() {
   return (
     <div className="relative flex-1 md:flex-none md:absolute md:inset-0 md:flex md:items-center pointer-events-none z-10">
-      <div className="max-w-xl px-6 py-8 md:py-0 md:px-16 lg:px-24">
-        <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] max-w-[14ch] text-white">
+      <div className="max-w-xl md:max-w-2xl lg:max-w-4xl px-6 py-8 md:py-0 md:px-16 lg:px-24">
+        <h1 className="font-display text-3xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-white">
           WHAT&apos;S LEFT BEHIND
           <br />
           CAN MOVE US

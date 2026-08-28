@@ -16,16 +16,16 @@ const STEPS = [
 function Step({ step, index }: { step: (typeof STEPS)[number]; index: number }) {
   const isOrange = step.tone === 'orange';
   return (
-    <div className="flex md:flex-col items-center md:text-center gap-5 md:gap-0 md:w-40">
+    <div className="flex md:flex-col items-center md:text-center gap-5 md:gap-0 w-full max-w-xs md:w-40 md:max-w-none mx-auto md:mx-0">
       <div className="shrink-0 flex flex-col items-center">
         <div
-          className={`w-14 h-14 rounded-full border-2 flex items-center justify-center ${
+          className={`w-20 h-20 md:w-20 md:h-20 rounded-full border-2 flex items-center justify-center ${
             isOrange ? 'border-zneako-orange bg-zneako-orange/10' : 'border-zneako-green bg-zneako-green/10'
           }`}
         >
           <step.icon
-            className={`w-6 h-6 ${isOrange ? 'text-zneako-orange-deep' : 'text-zneako-green-deep'}`}
-            strokeWidth={1.75}
+            className={`w-9 h-9 ${isOrange ? 'text-zneako-orange-deep' : 'text-zneako-green-deep'}`}
+            strokeWidth={1.5}
           />
         </div>
         <p className="mt-2 font-body text-xs text-black/40">{String(index + 1).padStart(2, '0')}</p>
@@ -57,7 +57,7 @@ export default function HowItWorks() {
             <Step step={step} index={i} />
             {i < STEPS.length - 1 && (
               <>
-                <div className="hidden md:flex items-center justify-center flex-1 pt-7">
+                <div className="hidden md:flex items-center justify-center flex-1 pt-9">
                   <ArrowRight className="w-4 h-4 text-black/20" strokeWidth={1.75} />
                 </div>
                 <div className="md:hidden flex flex-col items-center w-14 py-1">

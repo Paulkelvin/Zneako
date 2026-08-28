@@ -24,6 +24,15 @@ html {
   scroll-behavior: auto;
 }
 
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 body {
   background: var(--color-white);
   color: var(--color-black);
