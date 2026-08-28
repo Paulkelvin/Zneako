@@ -104,8 +104,10 @@ export default function Waitlist() {
             footwear.
           </p>
 
-          <div className="mt-8 inline-flex flex-col items-start">
-            <div className="border border-zneako-gold/40 rounded-lg px-6 py-4 -rotate-2">
+          <div className="mt-10 mb-4 relative w-44 h-28">
+            <div className="absolute inset-0 rounded-lg border border-zneako-gold/15 bg-zneako-charcoal rotate-[10deg] translate-x-2 -translate-y-2" />
+            <div className="absolute inset-0 rounded-lg border border-zneako-gold/25 bg-zneako-charcoal rotate-[5deg] translate-x-1 -translate-y-1" />
+            <div className="absolute inset-0 flex flex-col justify-center rounded-lg border border-zneako-gold/50 bg-zneako-charcoal px-6 py-4 -rotate-2">
               <p className="font-display text-4xl font-bold text-zneako-gold leading-none">50</p>
               <p className="mt-1 font-body text-[0.65rem] tracking-[0.15em] uppercase text-zneako-sand/60">
                 Pairs Available
@@ -183,7 +185,10 @@ export default function Waitlist() {
                 <p className="font-display text-lg font-semibold text-zneako-cream">
                   You&apos;re on the list.
                 </p>
-                <p className="mt-1 font-body text-sm text-zneako-sand/60 leading-relaxed">
+                <p className="mt-1 font-body text-sm text-zneako-sand/60 leading-relaxed md:hidden">
+                  Share your link to boost your chances.
+                </p>
+                <p className="mt-1 font-body text-sm text-zneako-sand/60 leading-relaxed hidden md:block">
                   The first 35 signups get a free pair, guaranteed. The next 15 pairs go to our
                   top referrers — share your link to boost your chances.
                 </p>
