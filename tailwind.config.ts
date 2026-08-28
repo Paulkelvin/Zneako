@@ -13,11 +13,13 @@ const config: Config = {
   			zneako: {
   				black: '#0A0A0A',
   				charcoal: '#1A1A1A',
-  				rubber: '#2C2C2C',
+  				white: '#FFFFFF',
+  				cream: '#FBF8F3',
   				sand: '#C8B891',
-  				gold: '#D4A843',
-  				cream: '#F5F0E8',
-  				green: '#4A7C59'
+  				orange: '#F7941D',
+  				'orange-deep': '#A85200',
+  				green: '#3AB54A',
+  				'green-deep': '#1B6E2E'
   			},
   			background: 'var(--background)',
   			foreground: 'var(--foreground)',

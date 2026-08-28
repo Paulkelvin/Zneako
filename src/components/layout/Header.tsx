@@ -38,7 +38,7 @@ export default function Header() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-colors duration-500 ${
         scrolled
-          ? 'bg-zneako-black/70 backdrop-blur-md border-b border-zneako-sand/10'
+          ? 'bg-zneako-black/80 backdrop-blur-md border-b border-white/10'
           : 'bg-transparent border-b border-transparent'
       }`}
     >
@@ -46,7 +46,7 @@ export default function Header() {
         <a
           href="#"
           onClick={(e) => handleNavClick(e, '#')}
-          className="font-display text-lg md:text-xl font-bold tracking-[0.2em] text-zneako-cream"
+          className="font-display text-lg md:text-xl font-bold tracking-[0.2em] text-white"
         >
           ZNEAKO
         </a>
@@ -58,7 +58,7 @@ export default function Header() {
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="font-body text-sm tracking-wide text-zneako-sand/80 hover:text-zneako-cream transition-colors duration-300"
+              className="font-body text-sm tracking-wide text-zneako-sand hover:text-zneako-orange transition-colors duration-300"
             >
               {link.label}
             </a>
@@ -71,14 +71,14 @@ export default function Header() {
             <button
               type="button"
               aria-label="Open menu"
-              className="md:hidden inline-flex items-center justify-center w-10 h-10 -mr-2 text-zneako-cream"
+              className="md:hidden inline-flex items-center justify-center w-10 h-10 -mr-2 text-white"
             >
               <Menu className="w-6 h-6" strokeWidth={1.5} />
             </button>
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-xs bg-zneako-black border-l border-zneako-sand/10 flex flex-col gap-0"
+            className="w-full sm:max-w-xs bg-zneako-black border-l border-white/10 flex flex-col gap-0"
           >
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <nav className="mt-16 flex flex-col gap-8">
@@ -87,14 +87,14 @@ export default function Header() {
                   <a
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link.href)}
-                    className="font-display text-2xl font-semibold tracking-tight text-zneako-cream"
+                    className="font-display text-2xl font-semibold tracking-tight text-white"
                   >
                     {link.label}
                   </a>
                 </SheetClose>
               ))}
             </nav>
-            <p className="mt-auto pt-8 font-body text-xs tracking-[0.15em] uppercase text-zneako-sand/40">
+            <p className="mt-auto pt-8 font-body text-xs tracking-[0.15em] uppercase text-zneako-sand/60">
               Giving rubber a second life.
             </p>
           </SheetContent>

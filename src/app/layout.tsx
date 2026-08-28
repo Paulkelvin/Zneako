@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Poppins, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
 
-const spaceGrotesk = Space_Grotesk({
+const poppins = Poppins({
   subsets: ['latin'],
+  weight: ['600', '700', '800'],
   variable: '--font-display',
   display: 'swap',
 });
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-body',
   display: 'swap',
@@ -26,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+    <html lang="en" className={`${poppins.variable} ${plusJakartaSans.variable}`}>
       <body className="antialiased">
         <Header />
         {children}
