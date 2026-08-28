@@ -6,6 +6,7 @@ varying vec2 vUv;
 
 uniform float uProgress;
 uniform float uTime;
+uniform float uVariationSeed;
 
 float hash3(vec3 p) {
   p = fract(p * vec3(443.897, 397.297, 491.187));
@@ -57,9 +58,11 @@ void main() {
 
   // Shoulder blocks: skewing the phase across vUv.y slants the block
   // boundaries into the angled/chevron shape real tread blocks have,
-  // instead of dead-straight radial lug lines.
+  // instead of dead-straight radial lug lines. uVariationSeed offsets the
+  // pattern's rotational phase per tyre so six tyres in the pile don't read
+  // as a stamped-identical tread.
   float skew = (vUv.y - 0.5) * 10.0;
-  float blockWave = sin((vUv.x * 46.0 + skew) * 6.28318) * 0.5 + 0.5;
+  float blockWave = sin((vUv.x * 46.0 + skew + uVariationSeed * 6.28318) * 6.28318) * 0.5 + 0.5;
   float shoulderBlocks = smoothstep(0.4, 0.6, blockWave);
 
   // Centre rib: fine circumferential sipes, much lower contrast than the
@@ -77,14 +80,17 @@ void main() {
 
   // Base rubber color — neutral charcoal, not the warm/brown tint this had
   // before, which read as "old rubber" rather than a real tyre's matte
-  // near-black.
-  vec3 baseColor = vec3(0.1, 0.099, 0.098);
+  // near-black. uVariationSeed nudges value/tint slightly per tyre so the
+  // pile reads as six real tyres, not six identical copies.
+  float valueVar = (uVariationSeed - 0.5) * 0.02;
+  vec3 baseColor = vec3(0.1 + valueVar, 0.099 + valueVar * 0.9, 0.098 + valueVar * 0.8);
   vec3 sidewallColor = baseColor + vec3(0.006, 0.006, 0.006) - sidewallDetail;
   vec3 treadColor = baseColor * (1.0 - treadDepth * 5.5);
   vec3 color = mix(sidewallColor, treadColor, treadMask);
 
-  // Wear variation
-  float wear = noise3D(vWorldPosition * 4.5) * 0.025;
+  // Wear variation — amount varies per tyre too, so some look more worn.
+  float wearAmount = mix(0.55, 1.6, uVariationSeed);
+  float wear = noise3D(vWorldPosition * 4.5) * 0.025 * wearAmount;
   color += wear;
 
   // Contact/crevice AO — darken deep into the bead near the axle and the
@@ -124,8 +130,11 @@ void main() {
   float rim = 1.0 - max(dot(viewDir, normal), 0.0);
   rim = pow(rim, 3.0) * 0.35;
 
+  // Roughness proxy: a per-tyre shininess/sharpness variation so they don't
+  // all catch the key light identically.
+  float roughnessVar = mix(6.0, 14.0, uVariationSeed);
   vec3 halfDir = normalize(lightDir + viewDir);
-  float spec = pow(max(dot(normal, halfDir), 0.0), 10.0) * 0.06;
+  float spec = pow(max(dot(normal, halfDir), 0.0), roughnessVar) * mix(0.04, 0.08, 1.0 - uVariationSeed);
 
   vec3 fillDir = normalize(vec3(-0.3, -0.5, 0.4));
   float fill = max(dot(normal, fillDir) + 0.3, 0.0) * 0.18;

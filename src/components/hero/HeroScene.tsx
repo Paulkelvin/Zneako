@@ -1,13 +1,34 @@
 'use client';
 
-import { Canvas, useThree } from '@react-three/fiber';
-import { Suspense } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Suspense, useMemo, useRef } from 'react';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { EffectPass, type EffectComposer as EffectComposerImpl } from 'postprocessing';
 import RubberParticleSystem from './RubberParticleSystem';
 import TyrePile from './TyrePile';
 
 interface HeroSceneProps {
   progress: number;
   playing: boolean;
+}
+
+// @react-three/postprocessing's EffectPass always encodes its output as if
+// compositing physically-linear scene radiance into sRGB, but our tyre/rubber
+// shaders write already display-ready color (no linear workflow). Left alone
+// that reapplies an sRGB curve on top of colors that already have one, washing
+// everything out. Disabling it here restores the un-composited look while
+// keeping the composited bloom highlights.
+function BloomEncodeFix({ composerRef }: { composerRef: React.MutableRefObject<EffectComposerImpl | null> }) {
+  useFrame(() => {
+    const composer = composerRef.current;
+    if (!composer) return;
+    for (const pass of composer.passes) {
+      if (pass instanceof EffectPass && pass.encodeOutput) {
+        pass.encodeOutput = false;
+      }
+    }
+  });
+  return null;
 }
 
 function HeroContent({ progress }: { progress: number }) {
@@ -22,6 +43,25 @@ function HeroContent({ progress }: { progress: number }) {
       <TyrePile progress={progress} />
       <RubberParticleSystem progress={progress} particleCount={5000} />
     </group>
+  );
+}
+
+function HeroEffects() {
+  const composerRef = useRef<EffectComposerImpl | null>(null);
+  // Bloom's props are static, but re-creating this element on every
+  // progress-driven render would otherwise give <EffectComposer> a new
+  // `children` reference each frame, tearing down and rebuilding its
+  // EffectPass (and recompiling its shader) 60 times a second.
+  const bloom = useMemo(
+    () => <Bloom intensity={0.35} luminanceThreshold={0.82} luminanceSmoothing={0.25} mipmapBlur />,
+    []
+  );
+
+  return (
+    <>
+      <EffectComposer ref={composerRef}>{bloom}</EffectComposer>
+      <BloomEncodeFix composerRef={composerRef} />
+    </>
   );
 }
 
@@ -71,6 +111,8 @@ export default function HeroScene({ progress, playing }: HeroSceneProps) {
       />
       <directionalLight position={[-3, -2, 4]} intensity={0.4} color="#C8B891" />
       <directionalLight position={[0, 3, -5]} intensity={0.3} color="#B0A898" />
+
+      <HeroEffects />
     </Canvas>
   );
 }

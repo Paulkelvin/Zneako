@@ -25,14 +25,49 @@ float easeInOutCubic(float t) {
     : 1.0 - pow(-2.0 * t + 2.0, 3.0) / 2.0;
 }
 
+// Same hash/noise and dissolve domain as tyre.frag.glsl, evaluated at each
+// particle's own start position — so a chunk reveals right around when the
+// tyre surface at that same spot erodes away, instead of on an unrelated
+// per-particle random delay. The two shaders can't share GLSL source, so
+// this is intentionally kept identical to tyre.frag.glsl's version.
+float hash3(vec3 p) {
+  p = fract(p * vec3(443.897, 397.297, 491.187));
+  p += dot(p, p.yzx + 19.19);
+  return fract((p.x + p.y) * p.z);
+}
+
+float noise3D(vec3 p) {
+  vec3 i = floor(p);
+  vec3 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+
+  return mix(
+    mix(mix(hash3(i), hash3(i + vec3(1, 0, 0)), f.x),
+        mix(hash3(i + vec3(0, 1, 0)), hash3(i + vec3(1, 1, 0)), f.x), f.y),
+    mix(mix(hash3(i + vec3(0, 0, 1)), hash3(i + vec3(1, 0, 1)), f.x),
+        mix(hash3(i + vec3(0, 1, 1)), hash3(i + vec3(1, 1, 1)), f.x), f.y),
+    f.z
+  );
+}
+
 void main() {
   float randVal = fract(sin(dot(animSeed.xy, vec2(12.9898, 78.233))) * 43758.5453);
   vRandomVal = randVal;
 
   // ── Phase timing ──
-  // Particles emerge as tyres dissolve, staggered by formationOrder
-  float revealDelay = formationOrder * 0.06;
-  float reveal = smoothstep(0.06 + revealDelay, 0.28 + revealDelay, uProgress);
+  // Particles emerge as the tyre erodes at that same location: sample the
+  // tyre shader's own dissolve noise at this particle's start position, and
+  // invert its smoothstep(0.10, 0.38, uProgress) threshold (linearised —
+  // exact enough for a stagger curve) to find the uProgress this chunk
+  // should reveal at.
+  vec3 startWorldPos = (modelMatrix * instanceMatrix * vec4(positionStart, 1.0)).xyz;
+  float n1 = noise3D(startWorldPos * 2.5);
+  float n2 = noise3D(startWorldPos * 6.0 + 123.456);
+  float n3 = noise3D(startWorldPos * 13.0 + 789.0);
+  float tyreNoiseVal = n1 * 0.5 + n2 * 0.35 + n3 * 0.15;
+
+  float revealCenter = 0.10 + 0.28 * tyreNoiseVal;
+  float reveal = smoothstep(revealCenter - 0.05, revealCenter + 0.09, uProgress);
   vReveal = reveal;
 
   // Detach from tyre surface

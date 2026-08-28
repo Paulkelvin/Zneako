@@ -70,32 +70,46 @@ function createTyreGeometry(): THREE.BufferGeometry {
   return geo;
 }
 
+// Deterministic pseudo-random per-tyre seed — same six tyres always get the
+// same variation rather than reshuffling on every reload.
+function seedFor(i: number): number {
+  const x = Math.sin(i * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
+
 export default function TyrePile({ progress }: TyrePileProps) {
-  const materialRef = useRef<THREE.ShaderMaterial>(null);
   const progressRef = useRef(0);
 
   const geometry = useMemo(() => createTyreGeometry(), []);
 
-  const material = useMemo(
+  // A distinct material per tyre (not a shared one) so each can carry its
+  // own colour/roughness/wear/tread-phase variation — six tyres of the same
+  // type, not six identical clones.
+  const materials = useMemo(
     () =>
-      new THREE.ShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms: {
-          uProgress: { value: 0 },
-          uTime: { value: 0 },
-        },
-        side: THREE.DoubleSide,
-      }),
+      TYRE_CONFIGS.map(
+        (_, i) =>
+          new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms: {
+              uProgress: { value: 0 },
+              uTime: { value: 0 },
+              uVariationSeed: { value: seedFor(i) },
+            },
+            side: THREE.DoubleSide,
+          })
+      ),
     []
   );
 
   useFrame((state) => {
-    if (!materialRef.current) return;
     const lerp = 0.1;
     progressRef.current += (progress - progressRef.current) * lerp;
-    materialRef.current.uniforms.uProgress.value = progressRef.current;
-    materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    for (const mat of materials) {
+      mat.uniforms.uProgress.value = progressRef.current;
+      mat.uniforms.uTime.value = state.clock.elapsedTime;
+    }
   });
 
   if (progress > 0.45) return null;
@@ -106,7 +120,7 @@ export default function TyrePile({ progress }: TyrePileProps) {
         <mesh
           key={i}
           geometry={geometry}
-          material={material}
+          material={materials[i]}
           position={[
             cfg.position[0] * SCENE_SCALE,
             cfg.position[1] * SCENE_SCALE,
@@ -118,7 +132,6 @@ export default function TyrePile({ progress }: TyrePileProps) {
           receiveShadow
         />
       ))}
-      <primitive object={material} ref={materialRef} />
 
       {/* Contact shadow / grounding plane */}
       <mesh

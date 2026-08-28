@@ -1,3 +1,5 @@
+import { createShoeParticlePositions } from './shoeGeometry';
+
 export interface ParticleData {
   startPositions: Float32Array;
   endPositions: Float32Array;
@@ -91,157 +93,22 @@ function createTyreStartPositions(particleCount: number, scale: number): Float32
   return positions;
 }
 
-// ── Shoe profile ──
-
-function isInsideShoeProfile(x: number, y: number): boolean {
-  const soleBottom = x > 1.2 ? (x - 1.2) * 0.5 : 0;
-  if (y < soleBottom) return false;
-  if (x < -1.55 || x > 1.55) return false;
-  const upper = getUpperBound(x);
-  return y <= upper;
-}
-
-function getUpperBound(x: number): number {
-  if (x < -1.5) return 0.12;
-  if (x < -1.2) {
-    return 0.25 + 0.9 * Math.sqrt(Math.max(0, 1 - Math.pow((x + 1.2) / 0.4, 2)));
-  } else if (x < -0.3) {
-    const t = (x + 1.2) / 0.9;
-    return 1.15 - t * 0.35;
-  } else if (x < 0.8) {
-    const t = (x + 0.3) / 1.1;
-    return 0.8 - t * 0.3;
-  } else if (x < 1.55) {
-    const t = (x - 0.8) / 0.75;
-    return 0.5 - t * t * 0.15;
-  }
-  return 0.2;
-}
-
-const SHOE_PROFILE = [
-  [1.5, 0.35],
-  [1.55, 0.25],
-  [1.5, 0.12],
-  [1.3, 0.05],
-  [0.8, 0.0],
-  [0.0, 0.0],
-  [-0.8, 0.0],
-  [-1.2, 0.02],
-  [-1.45, 0.05],
-  [-1.5, 0.12],
-  [-1.48, 0.3],
-  [-1.42, 0.55],
-  [-1.35, 0.8],
-  [-1.25, 0.95],
-  [-1.1, 1.05],
-  [-0.85, 1.1],
-  [-0.6, 1.08],
-  [-0.35, 1.0],
-  [-0.1, 0.95],
-  [0.15, 0.85],
-  [0.5, 0.7],
-  [0.8, 0.58],
-  [1.1, 0.48],
-  [1.35, 0.4],
-  [1.5, 0.35],
-];
-
-function lerpPoint(a: number[], b: number[], t: number): [number, number] {
-  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-}
-
-function sampleProfilePoint(): [number, number] {
-  const totalSegments = SHOE_PROFILE.length - 1;
-  const segIdx = Math.floor(Math.random() * totalSegments);
-  const t = Math.random();
-  return lerpPoint(SHOE_PROFILE[segIdx], SHOE_PROFILE[(segIdx + 1) % SHOE_PROFILE.length], t);
-}
-
-function getShoeWidthAtPoint(x: number, y: number): number {
-  let baseWidth: number;
-  if (x < -1.0) baseWidth = 0.28;
-  else if (x < 0.0) baseWidth = 0.4;
-  else if (x < 0.8) baseWidth = 0.42;
-  else baseWidth = 0.35 - (x - 0.8) * 0.15;
-
-  const heightNarrow = 1.0 - Math.max(0, y - 0.3) * 0.35;
-  return baseWidth * heightNarrow;
-}
-
-function createShoeShape(particleCount: number): Float32Array {
-  const positions: number[] = [];
-  const scale = 1.4;
-
-  const surfaceCount = Math.floor(particleCount * 0.40);
-  const soleCount = Math.floor(particleCount * 0.20);
-  const interiorCount = particleCount - surfaceCount - soleCount;
-
-  for (let i = 0; i < surfaceCount; i++) {
-    const [px, py] = sampleProfilePoint();
-    const width = getShoeWidthAtPoint(px, py);
-    const angle = Math.random() * Math.PI * 2;
-    const pz = Math.sin(angle) * width;
-    const jitter = (Math.random() - 0.5) * 0.06;
-
-    positions.push(
-      (px + jitter) * scale,
-      (py - 0.4 + jitter * 0.5) * scale,
-      (pz + jitter) * scale
-    );
-  }
-
-  for (let i = 0; i < soleCount; i++) {
-    const px = -1.45 + Math.random() * 2.9;
-    const soleEnd = px > 1.2 ? 1.5 : 1.55;
-    if (px > soleEnd) { i--; continue; }
-
-    const py = Math.random() * 0.18;
-    const width = getShoeWidthAtPoint(px, 0.1);
-    const pz = (Math.random() * 2 - 1) * width;
-
-    positions.push(px * scale, (py - 0.4) * scale, pz * scale);
-  }
-
-  let interiorPlaced = 0;
-  let interiorAttempts = 0;
-  while (interiorPlaced < interiorCount && interiorAttempts < interiorCount * 15) {
-    interiorAttempts++;
-    const px = -1.5 + Math.random() * 3.0;
-    const py = Math.random() * 1.1;
-
-    if (!isInsideShoeProfile(px, py)) continue;
-
-    const width = getShoeWidthAtPoint(px, py);
-    const pz = (Math.random() * 2 - 1) * width * 0.85;
-
-    positions.push(px * scale, (py - 0.4) * scale, pz * scale);
-    interiorPlaced++;
-  }
-  while (interiorPlaced < interiorCount) {
-    positions.push(
-      (Math.random() * 2 - 1) * scale,
-      (Math.random() * 0.5 - 0.2) * scale,
-      (Math.random() - 0.5) * 0.4 * scale
-    );
-    interiorPlaced++;
-  }
-
-  return new Float32Array(positions);
-}
+// ── Shoe target ──
+// Sampled from a real 3D trainer mesh (sole + lofted upper + tongue) via
+// MeshSurfaceSampler — see shoeGeometry.ts — rather than scattered inside a
+// 2D silhouette. Swapping in the actual Zneako shoe GLB later only means
+// changing what geometry gets sampled there; nothing here needs to change.
 
 // ── Main generator ──
 
 export function generateParticleData(particleCount: number): ParticleData {
-  const endPositions = createShoeShape(particleCount);
+  const endPositions = createShoeParticlePositions(particleCount);
   const startPositions = createTyreStartPositions(particleCount, 1.4);
 
   const animSeeds = new Float32Array(particleCount * 3);
   const dampFactors = new Float32Array(particleCount);
   const scales = new Float32Array(particleCount);
   const formationOrder = new Float32Array(particleCount);
-
-  const surfaceCount = Math.floor(particleCount * 0.40);
-  const soleCount = Math.floor(particleCount * 0.20);
 
   for (let i = 0; i < particleCount; i++) {
     const i3 = i * 3;
@@ -260,17 +127,13 @@ export function generateParticleData(particleCount: number): ParticleData {
       scales[i] = 0.04 + Math.random() * 0.035;
     }
 
-    if (i >= surfaceCount && i < surfaceCount + soleCount) {
-      formationOrder[i] = Math.random() * 0.15;
-    } else if (i < surfaceCount) {
-      const py = endPositions[i3 + 1];
-      if (py < -0.2) {
-        formationOrder[i] = 0.1 + Math.random() * 0.2;
-      } else {
-        formationOrder[i] = 0.25 + Math.random() * 0.35;
-      }
+    // Sole particles (below the upper's dip into the sole plane) form first,
+    // matching the sampled mesh's own sole-vs-upper split by height.
+    const py = endPositions[i3 + 1];
+    if (py < -0.2) {
+      formationOrder[i] = 0.1 + Math.random() * 0.2;
     } else {
-      formationOrder[i] = 0.4 + Math.random() * 0.4;
+      formationOrder[i] = 0.25 + Math.random() * 0.45;
     }
   }
 
