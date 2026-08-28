@@ -1,6 +1,7 @@
 import HeroSection from '@/components/hero/HeroSection';
 import ProblemSolution from '@/components/sections/ProblemSolution';
 import TeamStory from '@/components/sections/TeamStory';
+import Waitlist from '@/components/sections/Waitlist';
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <HeroSection />
       <ProblemSolution />
       <TeamStory />
+      <Waitlist />
     </main>
   );
 }
