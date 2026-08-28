@@ -17,18 +17,20 @@ function Step({ step, index }: { step: (typeof STEPS)[number]; index: number }) 
   const isOrange = step.tone === 'orange';
   return (
     <div className="flex md:flex-col items-center md:text-center gap-5 md:gap-0 w-full max-w-xs md:w-40 md:max-w-none mx-auto md:mx-0">
-      <div className="shrink-0 flex flex-col items-center">
+      <div className="shrink-0 relative">
         <div
-          className={`w-20 h-20 md:w-20 md:h-20 rounded-full border-2 flex items-center justify-center ${
+          className={`w-24 h-24 rounded-full border-2 flex items-center justify-center ${
             isOrange ? 'border-zneako-orange bg-zneako-orange/10' : 'border-zneako-green bg-zneako-green/10'
           }`}
         >
           <step.icon
-            className={`w-9 h-9 ${isOrange ? 'text-zneako-orange-deep' : 'text-zneako-green-deep'}`}
+            className={`w-10 h-10 ${isOrange ? 'text-zneako-orange-deep' : 'text-zneako-green-deep'}`}
             strokeWidth={1.5}
           />
         </div>
-        <p className="mt-2 font-body text-xs text-black/40">{String(index + 1).padStart(2, '0')}</p>
+        <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-6 h-6 rounded-full bg-white border border-black/10 font-body text-[10px] text-black/45">
+          {index + 1}
+        </span>
       </div>
 
       <div className="md:mt-4">

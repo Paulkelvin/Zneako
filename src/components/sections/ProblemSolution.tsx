@@ -99,8 +99,8 @@ export default function ProblemSolution() {
           <Connector />
 
           <TagPill label="Solution" tone="orange" icon={<Check className="w-3 h-3" strokeWidth={3} />} />
-          <div className="relative mt-4 rounded-lg border border-zneako-orange/25 bg-zneako-black p-8 md:p-10 overflow-hidden">
-            <BloomShape className="absolute top-5 right-5 w-12 h-12 md:w-14 md:h-14 text-zneako-orange/70" />
+          <div className="relative mt-4 rounded-lg border border-zneako-orange/25 bg-zneako-black p-8 md:p-10">
+            <BloomShape className="absolute -top-6 right-8 w-14 h-14 md:w-16 md:h-16 text-zneako-orange" />
             <p className="font-body text-sm md:text-base text-white/85 leading-relaxed">
               Zneako redesigns the trainer from the ground up: a single recycled rubber compound
               for the sole and midsole, over-moulded with a simplified upper. Fewer components,
