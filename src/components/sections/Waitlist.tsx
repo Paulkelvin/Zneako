@@ -9,7 +9,6 @@ const AGE_RANGES = [
   { label: '8–10 yrs', value: '8-10' },
   { label: '11–13 yrs', value: '11-13' },
 ];
-const REFERRAL_GOAL = 5;
 
 function Perforation() {
   return (
@@ -184,8 +183,9 @@ export default function Waitlist() {
                 <p className="font-display text-lg font-semibold text-zneako-cream">
                   You&apos;re on the list.
                 </p>
-                <p className="mt-1 font-body text-sm text-zneako-sand/60">
-                  Move up the queue by sharing your link with other families.
+                <p className="mt-1 font-body text-sm text-zneako-sand/60 leading-relaxed">
+                  The first 35 signups get a free pair, guaranteed. The next 15 pairs go to our
+                  top referrers — share your link to boost your chances.
                 </p>
               </div>
 
@@ -198,20 +198,11 @@ export default function Waitlist() {
                 </p>
               </div>
 
-              <div>
-                <p className="font-body text-xs tracking-[0.1em] uppercase text-zneako-sand/50 mb-2">
-                  {referralCount} of {REFERRAL_GOAL} referrals
+              <div className="flex items-baseline gap-2">
+                <p className="font-display text-2xl font-bold text-zneako-gold">{referralCount}</p>
+                <p className="font-body text-xs tracking-[0.1em] uppercase text-zneako-sand/50">
+                  {referralCount === 1 ? 'family referred' : 'families referred'}
                 </p>
-                <div className="flex gap-1.5">
-                  {Array.from({ length: REFERRAL_GOAL }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-2 flex-1 rounded-sm ${
-                        i < referralCount ? 'bg-zneako-gold' : 'bg-zneako-sand/15'
-                      }`}
-                    />
-                  ))}
-                </div>
               </div>
             </div>
           )}

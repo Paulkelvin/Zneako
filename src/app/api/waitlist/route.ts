@@ -4,8 +4,17 @@ import { sanityServerClient } from '@/lib/sanityServer';
 
 const AGE_RANGES = ['2-4', '5-7', '8-10', '11-13'];
 
+const RATE_LIMIT_WINDOW_HOURS = 24;
+const RATE_LIMIT_MAX_PER_IP = 5;
+
 function generateReferralCode(): string {
   return randomBytes(4).toString('hex');
+}
+
+function getClientIp(req: NextRequest): string | null {
+  const forwarded = req.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return req.headers.get('x-real-ip');
 }
 
 export async function POST(req: NextRequest) {
@@ -19,6 +28,7 @@ export async function POST(req: NextRequest) {
   const email = body.email?.trim().toLowerCase();
   const ageRange = body.ageRange;
   const ref = body.ref?.trim();
+  const ip = getClientIp(req);
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: 'A valid email is required' }, { status: 400 });
@@ -42,13 +52,33 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  let referrer: { _id: string } | null = null;
-  if (ref) {
-    referrer = await sanityServerClient.fetch<{ _id: string } | null>(
-      `*[_type == "waitlistSignup" && referralCode == $ref][0]{ _id }`,
-      { ref }
+  if (ip) {
+    const windowStart = new Date(
+      Date.now() - RATE_LIMIT_WINDOW_HOURS * 60 * 60 * 1000
+    ).toISOString();
+    const recentFromIp = await sanityServerClient.fetch<number>(
+      `count(*[_type == "waitlistSignup" && signupIp == $ip && _createdAt > $windowStart])`,
+      { ip, windowStart }
     );
+    if (recentFromIp >= RATE_LIMIT_MAX_PER_IP) {
+      return NextResponse.json(
+        { error: 'Too many signups from this network. Please try again later.' },
+        { status: 429 }
+      );
+    }
   }
+
+  let referrer: { _id: string; email: string; signupIp: string | null } | null = null;
+  if (ref) {
+    referrer = await sanityServerClient.fetch<
+      { _id: string; email: string; signupIp: string | null } | null
+    >(`*[_type == "waitlistSignup" && referralCode == $ref][0]{ _id, email, signupIp }`, { ref });
+  }
+
+  // Same-device signups don't earn the referrer credit — deters someone padding
+  // their own referral count with throwaway emails from the same network.
+  const referralIsSelfReferral = Boolean(referrer && ip && referrer.signupIp === ip);
+  const effectiveReferrer = referralIsSelfReferral ? null : referrer;
 
   const referralCode = generateReferralCode();
 
@@ -58,11 +88,12 @@ export async function POST(req: NextRequest) {
     ageRange,
     referralCode,
     referralCount: 0,
-    ...(referrer ? { referredBy: { _type: 'reference', _ref: referrer._id } } : {}),
+    ...(ip ? { signupIp: ip } : {}),
+    ...(effectiveReferrer ? { referredBy: { _type: 'reference', _ref: effectiveReferrer._id } } : {}),
   });
 
-  if (referrer) {
-    await sanityServerClient.patch(referrer._id).inc({ referralCount: 1 }).commit();
+  if (effectiveReferrer) {
+    await sanityServerClient.patch(effectiveReferrer._id).inc({ referralCount: 1 }).commit();
   }
 
   return NextResponse.json({
