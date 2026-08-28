@@ -64,13 +64,7 @@ export default function TeamStory() {
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-6 px-6 scroll-pl-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-10 md:overflow-visible">
           {TEAM.map((member) => (
             <div key={member.name} className="shrink-0 w-64 snap-start md:w-auto text-center">
-              <div
-                className="relative aspect-[4/5] rounded-lg overflow-hidden flex items-center justify-center p-4"
-                style={{
-                  background:
-                    'radial-gradient(ellipse at center, #1E1A16 0%, #120F0D 65%, #0A0A0A 100%)',
-                }}
-              >
+              <div className="relative aspect-[4/5] rounded-lg overflow-hidden flex items-center justify-center p-4 bg-[#332B21]">
                 {member.photo ? (
                   <div className="relative w-full h-full">
                     <Image
