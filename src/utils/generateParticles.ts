@@ -10,7 +10,15 @@ export interface ParticleData {
   count: number;
 }
 
-// ── Tyre pile configuration ──
+// ── Tyre staging ──
+//
+// Two tyres, deliberately posed rather than physics-dropped: one stands
+// upright and never dissolves — a constant "this is where it started"
+// anchor for the whole loop — while the other lies flat and is the one
+// that actually erodes into the rubber cloud that becomes the shoe. A
+// scattered heap didn't read as "tyre" at a glance; a single unmistakable
+// standing tyre does, and it gives the transformation something concrete
+// to compare itself against instead of dissolving into ambiguity.
 
 export interface TyreConfig {
   position: [number, number, number];
@@ -21,18 +29,19 @@ export interface TyreConfig {
 export const TYRE_MAJOR_R = 0.55;
 export const TYRE_MINOR_R = 0.24;
 
-// Baked from an offline cannon-es drop simulation (scripts/bake-tyre-pile.mjs,
-// seed 33) — tyres dropped onto a ground plane and left to settle under
-// gravity/friction so contacts, tilts and spread are physically plausible
-// rather than hand-placed.
-export const TYRE_CONFIGS: TyreConfig[] = [
-  { position: [0.619, 0.099, -0.453], rotation: [1.529, 0.717, 0.039], scale: 0.971 },
-  { position: [0.009, -0.437, 0.728], rotation: [3.141, -0.945, 3.141], scale: 0.959 },
-  { position: [-0.467, 0.039, -0.264], rotation: [2.054, -1.0, 0.557], scale: 0.895 },
-  { position: [-0.21, 0.347, 0.504], rotation: [-2.391, -0.02, 0.166], scale: 1.011 },
-  { position: [-0.225, 0.428, -1.082], rotation: [-1.54, 0.262, -2.93], scale: 1.073 },
-  { position: [0.163, 0.324, -0.83], rotation: [-1.489, -0.014, -2.941], scale: 0.861 },
-];
+// Never dissolves — rendered every frame regardless of progress.
+export const ANCHOR_TYRE_CONFIG: TyreConfig = {
+  position: [-0.62, 0.42, -0.35],
+  rotation: [1.48, 0.32, 0.14],
+  scale: 1.05,
+};
+
+// The one that erodes into the rubber particle cloud below.
+export const EXPLODING_TYRE_CONFIG: TyreConfig = {
+  position: [0.3, -0.16, 0.32],
+  rotation: [0.08, 0.55, 0.04],
+  scale: 1.0,
+};
 
 function rotateEulerXYZ(
   x: number, y: number, z: number,
@@ -51,43 +60,40 @@ function rotateEulerXYZ(
 
 function createTyreStartPositions(particleCount: number, scale: number): Float32Array {
   const positions = new Float32Array(particleCount * 3);
-  const perTyre = Math.floor(particleCount / TYRE_CONFIGS.length);
+  const cfg = EXPLODING_TYRE_CONFIG;
+  const majorR = TYRE_MAJOR_R * cfg.scale;
+  const minorR = TYRE_MINOR_R * cfg.scale;
 
-  for (let t = 0; t < TYRE_CONFIGS.length; t++) {
-    const cfg = TYRE_CONFIGS[t];
-    const start = t * perTyre;
-    const count = t === TYRE_CONFIGS.length - 1 ? particleCount - start : perTyre;
-    const majorR = TYRE_MAJOR_R * cfg.scale;
-    const minorR = TYRE_MINOR_R * cfg.scale;
+  // Only the exploding tyre feeds the cloud — the anchor tyre never
+  // dissolves, so it never needs particles of its own. That puts the
+  // whole particle budget into this one tyre instead of splitting it six
+  // ways, which reads as a denser, more convincing single-source erosion.
+  for (let i = 0; i < particleCount; i++) {
+    const u = Math.random() * Math.PI * 2;
+    const v = Math.random() * Math.PI * 2;
 
-    for (let i = 0; i < count; i++) {
-      const u = Math.random() * Math.PI * 2;
-      const v = Math.random() * Math.PI * 2;
-
-      let r: number;
-      if (Math.random() < 0.6) {
-        r = minorR * (0.82 + Math.random() * 0.18);
-      } else {
-        r = minorR * Math.sqrt(Math.random());
-      }
-
-      // Canonical torus with its hole axis along Y — matches the
-      // cannon-es cylinder axis used to bake TYRE_CONFIGS and the
-      // (unrotated) LatheGeometry axis in TyrePile.
-      const lx = (majorR + r * Math.cos(v)) * Math.cos(u);
-      const lz = (majorR + r * Math.cos(v)) * Math.sin(u);
-      const ly = r * Math.sin(v);
-
-      const [rx, ry, rz] = rotateEulerXYZ(
-        lx, ly, lz,
-        cfg.rotation[0], cfg.rotation[1], cfg.rotation[2]
-      );
-
-      const idx = (start + i) * 3;
-      positions[idx] = (rx + cfg.position[0]) * scale;
-      positions[idx + 1] = (ry + cfg.position[1]) * scale;
-      positions[idx + 2] = (rz + cfg.position[2]) * scale;
+    let r: number;
+    if (Math.random() < 0.6) {
+      r = minorR * (0.82 + Math.random() * 0.18);
+    } else {
+      r = minorR * Math.sqrt(Math.random());
     }
+
+    // Canonical torus with its hole axis along Y — matches the
+    // (unrotated) LatheGeometry axis in TyrePile.
+    const lx = (majorR + r * Math.cos(v)) * Math.cos(u);
+    const lz = (majorR + r * Math.cos(v)) * Math.sin(u);
+    const ly = r * Math.sin(v);
+
+    const [rx, ry, rz] = rotateEulerXYZ(
+      lx, ly, lz,
+      cfg.rotation[0], cfg.rotation[1], cfg.rotation[2]
+    );
+
+    const idx = i * 3;
+    positions[idx] = (rx + cfg.position[0]) * scale;
+    positions[idx + 1] = (ry + cfg.position[1]) * scale;
+    positions[idx + 2] = (rz + cfg.position[2]) * scale;
   }
 
   return positions;

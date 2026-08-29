@@ -3,7 +3,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { TYRE_CONFIGS, TYRE_MAJOR_R, TYRE_MINOR_R } from '@/utils/generateParticles';
+import { ANCHOR_TYRE_CONFIG, EXPLODING_TYRE_CONFIG, TYRE_MAJOR_R, TYRE_MINOR_R } from '@/utils/generateParticles';
 import vertexShader from '@/shaders/tyre.vert.glsl';
 import fragmentShader from '@/shaders/tyre.frag.glsl';
 
@@ -70,11 +70,17 @@ function createTyreGeometry(): THREE.BufferGeometry {
   return geo;
 }
 
-// Deterministic pseudo-random per-tyre seed — same six tyres always get the
-// same variation rather than reshuffling on every reload.
-function seedFor(i: number): number {
-  const x = Math.sin(i * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
+function makeTyreMaterial(variationSeed: number): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+    uniforms: {
+      uProgress: { value: 0 },
+      uTime: { value: 0 },
+      uVariationSeed: { value: variationSeed },
+    },
+    side: THREE.DoubleSide,
+  });
 }
 
 export default function TyrePile({ progress }: TyrePileProps) {
@@ -82,58 +88,57 @@ export default function TyrePile({ progress }: TyrePileProps) {
 
   const geometry = useMemo(() => createTyreGeometry(), []);
 
-  // A distinct material per tyre (not a shared one) so each can carry its
-  // own colour/roughness/wear/tread-phase variation — six tyres of the same
-  // type, not six identical clones.
-  const materials = useMemo(
-    () =>
-      TYRE_CONFIGS.map(
-        (_, i) =>
-          new THREE.ShaderMaterial({
-            vertexShader,
-            fragmentShader,
-            uniforms: {
-              uProgress: { value: 0 },
-              uTime: { value: 0 },
-              uVariationSeed: { value: seedFor(i) },
-            },
-            side: THREE.DoubleSide,
-          })
-      ),
-    []
-  );
+  // The anchor tyre's material never has its uProgress advanced past 0 —
+  // tyre.frag.glsl's dissolve discard only triggers once uProgress clears
+  // its 0.10 threshold, so leaving it pinned at 0 keeps this tyre solid
+  // and fully shaded for the entire loop, reusing the exact same shader
+  // (tread detail, wear, lighting) as the one that does dissolve.
+  const anchorMaterial = useMemo(() => makeTyreMaterial(0.7), []);
+  const explodingMaterial = useMemo(() => makeTyreMaterial(0.3), []);
 
   useFrame((state) => {
     const lerp = 0.1;
     progressRef.current += (progress - progressRef.current) * lerp;
-    for (const mat of materials) {
-      mat.uniforms.uProgress.value = progressRef.current;
-      mat.uniforms.uTime.value = state.clock.elapsedTime;
-    }
+    explodingMaterial.uniforms.uProgress.value = progressRef.current;
+    explodingMaterial.uniforms.uTime.value = state.clock.elapsedTime;
   });
 
-  if (progress > 0.45) return null;
+  const showExploding = progress <= 0.45;
 
   return (
     <group>
-      {TYRE_CONFIGS.map((cfg, i) => (
+      <mesh
+        geometry={geometry}
+        material={anchorMaterial}
+        position={[
+          ANCHOR_TYRE_CONFIG.position[0] * SCENE_SCALE,
+          ANCHOR_TYRE_CONFIG.position[1] * SCENE_SCALE,
+          ANCHOR_TYRE_CONFIG.position[2] * SCENE_SCALE,
+        ]}
+        rotation={ANCHOR_TYRE_CONFIG.rotation}
+        scale={ANCHOR_TYRE_CONFIG.scale * SCENE_SCALE}
+        castShadow
+        receiveShadow
+      />
+
+      {showExploding && (
         <mesh
-          key={i}
           geometry={geometry}
-          material={materials[i]}
+          material={explodingMaterial}
           position={[
-            cfg.position[0] * SCENE_SCALE,
-            cfg.position[1] * SCENE_SCALE,
-            cfg.position[2] * SCENE_SCALE,
+            EXPLODING_TYRE_CONFIG.position[0] * SCENE_SCALE,
+            EXPLODING_TYRE_CONFIG.position[1] * SCENE_SCALE,
+            EXPLODING_TYRE_CONFIG.position[2] * SCENE_SCALE,
           ]}
-          rotation={cfg.rotation}
-          scale={cfg.scale * SCENE_SCALE}
+          rotation={EXPLODING_TYRE_CONFIG.rotation}
+          scale={EXPLODING_TYRE_CONFIG.scale * SCENE_SCALE}
           castShadow
           receiveShadow
         />
-      ))}
+      )}
 
-      {/* Contact shadow / grounding plane */}
+      {/* Contact shadow / grounding plane — stays for the anchor tyre's
+          own shadow even once the exploding tyre is gone. */}
       <mesh
         position={[0.0, -0.42 * SCENE_SCALE, 0.0]}
         rotation={[-Math.PI / 2, 0, 0]}

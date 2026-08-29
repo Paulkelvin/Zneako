@@ -41,7 +41,7 @@ function HeroContent({ progress }: { progress: number }) {
   // on mobile; still offset clear of the left-anchored text, and a bit
   // smaller than before, on desktop.
   const isMobile = size.width < 768;
-  const offsetX = isMobile ? 0 : Math.min(viewport.width * 0.3, 3.6);
+  const offsetX = isMobile ? 0 : Math.min(viewport.width * 0.3, 2.6);
   const offsetY = isMobile ? 0.85 : -0.2;
   const groupScale = isMobile ? 0.72 : 0.65;
 
