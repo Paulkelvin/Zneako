@@ -76,7 +76,7 @@ export default function TeamStory() {
                       alt={member.name}
                       fill
                       sizes="(min-width: 768px) 25vw, 60vw"
-                      className="object-cover object-top scale-110"
+                      className="object-cover object-top scale-110 origin-top"
                     />
                   </div>
                 ) : (
