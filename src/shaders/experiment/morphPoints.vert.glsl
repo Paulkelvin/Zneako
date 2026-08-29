@@ -12,6 +12,7 @@ uniform float uSize;
 
 varying float vAlpha;
 varying float vGlow;
+varying float vShade;
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453123);
@@ -46,6 +47,17 @@ void main() {
   pos.y += cos(uTime * 0.5 + uv.x * 24.0) * 0.05 * flight;
   pos.z += (n - 0.5) * 0.12 * flight;
 
+  // Pseudo-shading: points have no real normal, but for a roughly
+  // convex/blobby form (a torus, a lofted shoe shell) the vector from an
+  // approximate shape center out to the point is a decent stand-in for one.
+  // Without this every particle glows equally bright and the cloud reads as
+  // a flat haze; with it, the "far" side of the tyre pile and the sole of
+  // the shoe fall into shadow the way a real lit object would.
+  vec3 pseudoCenter = vec3(0.0, 0.35, 0.0);
+  vec3 pseudoNormal = normalize(pos - pseudoCenter);
+  vec3 lightDir = normalize(vec3(0.45, 0.75, 0.6));
+  float lit = dot(pseudoNormal, lightDir) * 0.5 + 0.5;
+
   vec4 modelPosition = modelMatrix * vec4(pos, 1.0);
   vec4 viewPosition = viewMatrix * modelPosition;
   gl_Position = projectionMatrix * viewPosition;
@@ -56,4 +68,5 @@ void main() {
 
   vAlpha = 0.55 + 0.45 * flight;
   vGlow = flight;
+  vShade = mix(0.3, 1.35, lit);
 }

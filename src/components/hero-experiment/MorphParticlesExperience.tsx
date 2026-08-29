@@ -15,7 +15,7 @@ interface MorphParticlesExperienceProps {
   playing: boolean;
 }
 
-const BASE_PARTICLE_COUNT = 120000;
+const BASE_PARTICLE_COUNT = 200000;
 
 function MorphParticles({ progress }: { progress: number }) {
   const { viewport } = useThree();
@@ -79,14 +79,16 @@ function ExperienceEffects() {
 
 function ExperienceContent({ progress }: { progress: number }) {
   const { viewport } = useThree();
-  const offsetX = Math.min(viewport.width * 0.3, 3.6);
+  const offsetX = Math.min(viewport.width * 0.14, 1.6);
 
-  // Back to the production hero's exact rotation/position/scale — that
-  // framing was already art-directed for this same shoe/tyre geometry and
-  // reads correctly with the chunky-material renderer, so composition
-  // wasn't actually the bug. What's left to fix is particle density.
+  // Full-bleed framing, deliberately much bigger than the production hero's
+  // small corner decoration — MisterPrada's own legible states (the figure,
+  // the demon face, the giant "E") all fill most of the viewport. A sparse
+  // point cloud tucked into a hero's decorative corner reads as dust
+  // regardless of density; the same particle count filling the frame reads
+  // as a form.
   return (
-    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -0.2, 0]} scale={0.85}>
+    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -0.15, 0]} scale={1.05}>
       <MorphParticles progress={progress} />
     </group>
   );
@@ -96,8 +98,8 @@ export default function MorphParticlesExperience({ progress, playing }: MorphPar
   return (
     <Canvas
       camera={{
-        position: [0.8, 0.3, 8],
-        fov: 42,
+        position: [0.8, 0.3, 4.6],
+        fov: 45,
         near: 0.1,
         far: 100,
       }}

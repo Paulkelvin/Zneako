@@ -2,6 +2,7 @@ precision highp float;
 
 varying float vAlpha;
 varying float vGlow;
+varying float vShade;
 
 void main() {
   // Soft radial falloff sprite — bright core fading to nothing at the
@@ -11,6 +12,7 @@ void main() {
   float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
   float strength = 0.05 / max(distanceToCenter, 0.001) - 0.1;
   strength = clamp(strength, 0.0, 3.0);
+  strength *= vShade;
 
   // Warm rubber-ember colour at rest, shifting toward a brighter amber
   // spark while a particle is mid-flight between the two forms.
