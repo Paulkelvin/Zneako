@@ -35,15 +35,18 @@ function BloomEncodeFix({ composerRef }: { composerRef: React.MutableRefObject<E
 function HeroContent({ progress }: { progress: number }) {
   const { viewport, size } = useThree();
   // Below md (768px) the text and art stack vertically instead of
-  // overlaying (see HeroSection.tsx), so there's nothing to dodge — the
-  // desktop offset was pushing the subject off the right edge of the much
-  // narrower mobile frame for no reason. Centered and noticeably smaller
-  // on mobile; still offset clear of the left-anchored text, and a bit
-  // smaller than before, on desktop.
+  // overlaying (see HeroSection.tsx), so mobile's offsetX only needs to
+  // hit the same left margin the text itself uses (px-6, 24px) rather
+  // than dodge anything. Desktop's offsetX dodges the left-anchored text
+  // while leaving matching breathing room on the right edge too — both
+  // margins (text-gap and right-edge) verified via dense frame sampling
+  // across the full ~15s cycle, not just a resting frame, since the
+  // dissolve/drift animation pushes noticeably further than any static
+  // pose does.
   const isMobile = size.width < 768;
-  const offsetX = isMobile ? 0 : Math.min(viewport.width * 0.3, 2.6);
-  const offsetY = isMobile ? 0.85 : -0.2;
-  const groupScale = isMobile ? 0.72 : 0.65;
+  const offsetX = isMobile ? -0.15 : Math.min(viewport.width * 0.3, 2.4);
+  const offsetY = isMobile ? 0.95 : -0.2;
+  const groupScale = isMobile ? 1.0 : 0.55;
 
   return (
     <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, offsetY, 0]} scale={groupScale}>

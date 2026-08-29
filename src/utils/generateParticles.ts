@@ -38,7 +38,7 @@ export const ANCHOR_TYRE_CONFIG: TyreConfig = {
 
 // The one that erodes into the rubber particle cloud below.
 export const EXPLODING_TYRE_CONFIG: TyreConfig = {
-  position: [0.3, -0.16, 0.32],
+  position: [0.08, -0.16, 0.32],
   rotation: [0.08, 0.55, 0.04],
   scale: 1.0,
 };
