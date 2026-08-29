@@ -4,6 +4,7 @@ import { Award } from 'lucide-react';
 interface TeamMember {
   name: string;
   role: string;
+  bio?: string;
   photo?: string;
 }
 
@@ -11,10 +12,19 @@ const TEAM: TeamMember[] = [
   {
     name: 'Oluwabusayo Idowu',
     role: 'Co-Founder & Commercial Lead',
+    bio: 'Leads product translation, market validation and commercial development, making sure the science becomes something families actually want.',
     photo: '/team/oluwabusayo-idowu.png',
   },
-  { name: 'Dr Rob Innie', role: 'CTO, Polymer Institute, University of Bradford' },
-  { name: 'Professor Klaus Pors', role: 'Academic Co-Founder, Institute of Cancer Therapeutics' },
+  {
+    name: 'Dr Rob Innie',
+    role: 'CTO, Polymer Institute, University of Bradford',
+    bio: 'Leads the technical work on rubber compounding, processing and prototype development.',
+  },
+  {
+    name: 'Professor Klaus Pors',
+    role: 'Academic Co-Founder, Institute of Cancer Therapeutics',
+    bio: 'Provides strategic oversight, ensuring alignment with research, innovation and commercialisation priorities.',
+  },
   { name: 'Bonnie Clyde', role: 'Innovation Officer' },
 ];
 
@@ -100,6 +110,9 @@ export default function TeamStory() {
                 {member.name}
               </p>
               <p className="mt-1 font-body text-xs text-black/55">{member.role}</p>
+              {member.bio && (
+                <p className="mt-2 font-body text-xs text-black/45 leading-relaxed">{member.bio}</p>
+              )}
             </div>
           ))}
         </div>
