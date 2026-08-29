@@ -4,4 +4,4 @@
 //
 // Flip this back to false (or delete src/components/hero-experiment and this
 // file) to fully revert to the original hero with no other code changes.
-export const USE_MORPH_PARTICLES_EXPERIMENT = true;
+export const USE_MORPH_PARTICLES_EXPERIMENT = false;
