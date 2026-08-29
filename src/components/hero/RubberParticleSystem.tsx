@@ -59,7 +59,7 @@ export default function RubberParticleSystem({
         uProgress: { value: 0 },
         uTime: { value: 0 },
         uDriftSpeed: { value: 0.3 },
-        uDriftAmplitude: { value: 0.28 },
+        uDriftAmplitude: { value: 0.26 },
         uColorBase: { value: new THREE.Color('#4A4845') },
         uColorHighlight: { value: new THREE.Color('#6B6560') },
         uLightDir: { value: new THREE.Vector3(0.5, 1.0, 0.3).normalize() },

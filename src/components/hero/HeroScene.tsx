@@ -50,9 +50,9 @@ function HeroContent({ progress }: { progress: number }) {
   // measurements when touching this; it does not behave like a CSS
   // top-offset.
   const isMobile = size.width < 768;
-  const offsetX = isMobile ? -0.3 : Math.min(viewport.width * 0.3, 2.4);
-  const offsetY = isMobile ? -0.5 : -0.2;
-  const groupScale = isMobile ? 1.0 : 0.55;
+  const offsetX = isMobile ? -0.22 : Math.min(viewport.width * 0.3, 2.4);
+  const offsetY = isMobile ? -0.2 : -0.2;
+  const groupScale = isMobile ? 1.08 : 0.55;
 
   return (
     <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, offsetY, 0]} scale={groupScale}>
