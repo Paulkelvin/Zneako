@@ -2,7 +2,7 @@
 
 export default function HeroOverlay() {
   return (
-    <div className="relative flex-1 md:flex-none md:absolute md:inset-0 md:flex md:items-center pointer-events-none z-10">
+    <div className="relative flex-1 pt-24 md:pt-0 md:flex-none md:absolute md:inset-0 md:flex md:items-center pointer-events-none z-10">
       <div className="max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl px-6 py-8 md:py-0 md:px-16 lg:px-24">
         <h1 className="font-display text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-[1.1] text-zneako-black">
           WHAT&apos;S LEFT BEHIND
