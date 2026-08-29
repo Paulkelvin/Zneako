@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useAutoplayProgress } from '@/hooks/useAutoplayProgress';
 import { useInViewport } from '@/hooks/useInViewport';
 import HeroOverlay from './HeroOverlay';
+import HeroStateLabel from './HeroStateLabel';
 
 const HeroScene = dynamic(() => import('./HeroScene'), {
   ssr: false,
@@ -33,6 +34,7 @@ export default function HeroSection() {
       {/* 3D transformation — full-bleed on desktop, upper portion on mobile */}
       <div className="relative h-[56vh] shrink-0 md:absolute md:inset-0 md:h-auto">
         <HeroScene progress={progress} playing={isVisible} />
+        <HeroStateLabel progress={progress} />
       </div>
     </section>
   );

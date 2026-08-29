@@ -2,6 +2,7 @@
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Suspense, useMemo, useRef } from 'react';
+import * as THREE from 'three';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { EffectPass, type EffectComposer as EffectComposerImpl } from 'postprocessing';
 import RubberParticleSystem from './RubberParticleSystem';
@@ -51,6 +52,23 @@ function HeroContent({ progress }: { progress: number }) {
   );
 }
 
+// Subtle push-in synced to the same progress that drives the material
+// transformation, so the camera reads as directed rather than static —
+// dollies toward the subject as the shoe assembles, eases back out as it
+// breaks down again. Z-only: the object's own on-screen X position already
+// depends on camera distance (see HeroContent's offsetX, computed from
+// viewport.width), so any lateral camera drift compounds with that and can
+// push the subject out of frame — confirmed by testing, not just theory.
+const CAMERA_Z_TYRE = 8;
+const CAMERA_Z_SHOE = 7.4;
+
+function CameraRig({ progress }: { progress: number }) {
+  useFrame(({ camera }) => {
+    camera.position.z = THREE.MathUtils.lerp(CAMERA_Z_TYRE, CAMERA_Z_SHOE, progress);
+  });
+  return null;
+}
+
 function HeroEffects() {
   const composerRef = useRef<EffectComposerImpl | null>(null);
   // Bloom's props are static, but re-creating this element on every
@@ -95,6 +113,7 @@ export default function HeroScene({ progress, playing }: HeroSceneProps) {
         height: '100%',
       }}
     >
+      <CameraRig progress={progress} />
       <Suspense fallback={null}>
         <HeroContent progress={progress} />
       </Suspense>
