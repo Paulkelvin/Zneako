@@ -50,8 +50,8 @@ function HeroContent({ progress }: { progress: number }) {
   // measurements when touching this; it does not behave like a CSS
   // top-offset.
   const isMobile = size.width < 768;
-  const offsetX = isMobile ? -0.15 : Math.min(viewport.width * 0.3, 2.4);
-  const offsetY = isMobile ? -0.7 : -0.2;
+  const offsetX = isMobile ? -0.3 : Math.min(viewport.width * 0.3, 2.4);
+  const offsetY = isMobile ? -0.5 : -0.2;
   const groupScale = isMobile ? 1.0 : 0.55;
 
   return (
