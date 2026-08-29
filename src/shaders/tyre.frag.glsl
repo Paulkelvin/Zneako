@@ -144,10 +144,22 @@ void main() {
   // going flat black, like a soft box near the lens.
   float camFill = max(dot(normal, viewDir), 0.0) * 0.3;
 
+  // Environment reflection — a cheap two-tone "sky above / ground below"
+  // stand-in for a real cubemap (our hand-written ShaderMaterial has no
+  // envMap pipeline to sample one). Even matte rubber shows some
+  // reflective sheen, strongest at grazing angles (Fresnel) — that's
+  // usually the single biggest missing cue that makes a render read as
+  // flat CG instead of a photographed material.
+  vec3 reflectDir = reflect(-viewDir, normal);
+  float skyMix = reflectDir.y * 0.5 + 0.5;
+  vec3 envColor = mix(vec3(0.035, 0.033, 0.03), vec3(0.5, 0.47, 0.42), skyMix);
+  float envFresnel = pow(1.0 - max(dot(viewDir, normal), 0.0), 4.0);
+
   vec3 ambient = vec3(0.16, 0.153, 0.143);
   vec3 lit = color * (ambient + diffuse * 0.85 + fill + camFill);
   lit += rim * vec3(0.18, 0.16, 0.13);
   lit += spec * vec3(0.2);
+  lit += envColor * envFresnel * 0.55;
 
   // Dissolution edge — warm crumbling rubber
   lit += edgeGlow * vec3(0.3, 0.14, 0.04) * 0.45;

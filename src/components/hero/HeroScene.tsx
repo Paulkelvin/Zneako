@@ -42,7 +42,7 @@ function HeroContent({ progress }: { progress: number }) {
   // smaller than before, on desktop.
   const isMobile = size.width < 768;
   const offsetX = isMobile ? 0 : Math.min(viewport.width * 0.3, 3.6);
-  const groupScale = isMobile ? 0.55 : 0.65;
+  const groupScale = isMobile ? 1.05 : 0.65;
 
   return (
     <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -0.2, 0]} scale={groupScale}>

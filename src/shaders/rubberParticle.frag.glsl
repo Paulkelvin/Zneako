@@ -37,11 +37,21 @@ void main() {
   float grain = fract(sin(dot(vWorldPosition.xz * 40.0, vec2(12.9898, 78.233))) * 43758.5453);
   float grainEffect = mix(0.9, 1.1, grain);
 
+  // Environment reflection — same cheap sky/ground Fresnel stand-in as
+  // tyre.frag.glsl, so the loose rubber fragments carry the same
+  // reflective sheen cue as the tyres they came from instead of reading
+  // flatter once they detach.
+  vec3 reflectDir = reflect(-viewDir, normal);
+  float skyMix = reflectDir.y * 0.5 + 0.5;
+  vec3 envColor = mix(vec3(0.035, 0.033, 0.03), vec3(0.5, 0.47, 0.42), skyMix);
+  float envFresnel = pow(1.0 - max(dot(viewDir, normal), 0.0), 4.0);
+
   // Combine
   vec3 ambient = uAmbientColor * 0.5;
   vec3 lit = vColor * (ambient + diffuse * 0.8 + fill) * grainEffect;
   lit += rim * vec3(0.35, 0.32, 0.28);
   lit += spec * vec3(0.4, 0.38, 0.35);
+  lit += envColor * envFresnel * 0.5;
 
   // Depth fog — fades toward the hero's own white background instead of
   // near-black, so distant particles blend into the page rather than
