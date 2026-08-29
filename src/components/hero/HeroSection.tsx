@@ -25,12 +25,15 @@ export default function HeroSection() {
       ref={containerRef}
       className="relative w-full flex flex-col md:block overflow-hidden bg-white min-h-[100dvh] md:h-screen md:max-h-[110vh]"
     >
+      {/* Text/buttons first on mobile (stacked flow); on desktop both are
+          absolutely positioned and overlaid, so DOM order doesn't matter
+          there — HeroOverlay's z-10 already keeps it above the scene. */}
+      <HeroOverlay />
+
       {/* 3D transformation — full-bleed on desktop, upper portion on mobile */}
       <div className="relative h-[56vh] shrink-0 md:absolute md:inset-0 md:h-auto">
         <HeroScene progress={progress} playing={isVisible} />
       </div>
-
-      <HeroOverlay />
     </section>
   );
 }

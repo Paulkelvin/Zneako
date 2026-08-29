@@ -32,14 +32,19 @@ function BloomEncodeFix({ composerRef }: { composerRef: React.MutableRefObject<E
 }
 
 function HeroContent({ progress }: { progress: number }) {
-  const { viewport } = useThree();
-  // Offset as a fraction of the visible width so the subject sits well
-  // clear of the left-anchored text on wide screens without being pushed
-  // out of frame on mobile's much narrower aspect ratio.
-  const offsetX = Math.min(viewport.width * 0.3, 3.6);
+  const { viewport, size } = useThree();
+  // Below md (768px) the text and art stack vertically instead of
+  // overlaying (see HeroSection.tsx), so there's nothing to dodge — the
+  // desktop offset was pushing the subject off the right edge of the much
+  // narrower mobile frame for no reason. Centered and noticeably smaller
+  // on mobile; still offset clear of the left-anchored text, and a bit
+  // smaller than before, on desktop.
+  const isMobile = size.width < 768;
+  const offsetX = isMobile ? 0 : Math.min(viewport.width * 0.3, 3.6);
+  const groupScale = isMobile ? 0.55 : 0.65;
 
   return (
-    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -0.2, 0]} scale={0.85}>
+    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -0.2, 0]} scale={groupScale}>
       <TyrePile progress={progress} />
       <RubberParticleSystem progress={progress} particleCount={5000} />
     </group>
