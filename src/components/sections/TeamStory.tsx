@@ -54,9 +54,13 @@ export default function TeamStory() {
           purpose as the part you do: a genuine commitment to a better future.
         </p>
 
-        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-black/15 px-4 py-1.5 font-body text-xs text-black/65">
-          <Award className="w-3.5 h-3.5 text-zneako-orange-deep" strokeWidth={1.75} />
-          Recipient of a rapid funding grant to support prototyping
+        <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-zneako-orange/25 bg-zneako-orange/8 py-1.5 pl-1.5 pr-5">
+          <span className="flex items-center justify-center w-7 h-7 rounded-full bg-zneako-orange shrink-0">
+            <Award className="w-3.5 h-3.5 text-zneako-black" strokeWidth={2} />
+          </span>
+          <span className="font-body text-xs text-black/70">
+            Recipient of a rapid funding grant to support prototyping
+          </span>
         </div>
       </div>
 

@@ -8,7 +8,7 @@ export default function TagPill({ label, icon, tone = 'neutral' }: TagPillProps)
   const toneClasses = {
     neutral: 'border-black/15 bg-zneako-cream text-black/70',
     orange: 'border-transparent bg-zneako-orange text-zneako-black',
-    green: 'border-transparent bg-zneako-green text-zneako-black',
+    green: 'border-transparent bg-zneako-green-deep text-white shadow-sm shadow-zneako-green-deep/20',
   }[tone];
 
   return (
