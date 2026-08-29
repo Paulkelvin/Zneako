@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
@@ -5,7 +6,13 @@ export default function Footer() {
     <footer className="relative bg-zneako-black border-t border-white/10 py-16 px-6 md:px-16 lg:px-24">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-10">
         <div className="max-w-sm">
-          <p className="font-display text-lg font-bold tracking-tight text-white">ZNEAKO</p>
+          <Image
+            src="/brand/zneako-logo-lockup.png"
+            alt="Zneako"
+            width={719}
+            height={163}
+            className="h-8 w-auto"
+          />
           <p className="mt-3 font-body text-sm text-zneako-sand/70 leading-relaxed">
             The part you don&apos;t see matters just as much.
           </p>

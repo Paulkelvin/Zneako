@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Menu } from 'lucide-react';
 import { useScrolled } from '@/hooks/useScrolled';
+import { scrollToHref } from '@/lib/scrollToHref';
 import {
   Sheet,
   SheetContent,
@@ -15,14 +17,6 @@ const NAV_LINKS = [
   { label: 'Home', href: '#' },
   { label: 'Discover', href: '#discover' },
 ];
-
-function scrollToHref(href: string) {
-  if (href === '#') {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-  document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
 export default function Header() {
   const scrolled = useScrolled();
@@ -46,10 +40,17 @@ export default function Header() {
         <a
           href="#"
           onClick={(e) => handleNavClick(e, '#')}
-          className={`font-display text-lg md:text-xl font-bold tracking-[0.2em] transition-colors duration-500 ${
+          className={`flex items-center gap-2.5 font-display text-lg md:text-xl font-bold tracking-[0.2em] transition-colors duration-500 ${
             scrolled ? 'text-white' : 'text-zneako-black'
           }`}
         >
+          <Image
+            src="/brand/zneako-icon-square.png"
+            alt=""
+            width={32}
+            height={32}
+            className="w-7 h-7 md:w-8 md:h-8 rounded-full"
+          />
           ZNEAKO
         </a>
 

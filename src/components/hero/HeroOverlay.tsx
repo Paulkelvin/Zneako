@@ -1,5 +1,7 @@
 'use client';
 
+import { scrollToHref } from '@/lib/scrollToHref';
+
 export default function HeroOverlay() {
   return (
     <div className="relative pt-20 md:pt-0 md:absolute md:inset-0 md:flex md:items-center pointer-events-none z-10">
@@ -17,6 +19,10 @@ export default function HeroOverlay() {
         <div className="mt-6 md:mt-8 pointer-events-auto">
           <a
             href="#discover"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToHref('#discover');
+            }}
             className="group inline-flex items-center gap-3 font-display text-sm md:text-base font-semibold tracking-[0.15em] uppercase text-zneako-black border border-black/20 px-8 py-4 rounded-sm transition-all duration-500 hover:bg-zneako-orange hover:text-zneako-black hover:border-zneako-orange"
           >
             Discover Zneako
