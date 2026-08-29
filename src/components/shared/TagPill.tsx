@@ -16,7 +16,14 @@ export default function TagPill({ label, icon, tone = 'neutral' }: TagPillProps)
       className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-body text-xs tracking-[0.15em] uppercase ${toneClasses}`}
     >
       {label}
-      {icon}
+      {icon &&
+        (tone === 'green' ? (
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/15 ring-1 ring-white/25">
+            {icon}
+          </span>
+        ) : (
+          icon
+        ))}
     </span>
   );
 }
