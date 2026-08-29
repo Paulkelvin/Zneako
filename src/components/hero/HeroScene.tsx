@@ -42,10 +42,11 @@ function HeroContent({ progress }: { progress: number }) {
   // smaller than before, on desktop.
   const isMobile = size.width < 768;
   const offsetX = isMobile ? 0 : Math.min(viewport.width * 0.3, 3.6);
+  const offsetY = isMobile ? 0.85 : -0.2;
   const groupScale = isMobile ? 0.72 : 0.65;
 
   return (
-    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, -0.2, 0]} scale={groupScale}>
+    <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, offsetY, 0]} scale={groupScale}>
       <TyrePile progress={progress} />
       <RubberParticleSystem progress={progress} particleCount={5000} />
     </group>
