@@ -53,12 +53,23 @@ export default function TeamStory() {
           starting with children&apos;s footwear. Every part you don&apos;t see carries the same
           purpose as the part you do: a genuine commitment to a better future.
         </p>
+        <p className="mt-3 font-body text-[11px] text-black/40">
+          Source:{' '}
+          <a
+            href="https://hansard.parliament.uk/commons/2025-04-29/debates/DF1C0690-5CAF-4B76-98FC-49F46D94ED16/RecyclingOfTyres"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-zneako-orange-deep"
+          >
+            UK Parliament, Westminster Hall debate on tyre recycling (29 Apr 2025)
+          </a>
+        </p>
 
-        <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-zneako-orange/25 bg-zneako-orange/8 py-1.5 pl-1.5 pr-5">
-          <span className="flex items-center justify-center w-7 h-7 rounded-full bg-zneako-orange shrink-0">
-            <Award className="w-3.5 h-3.5 text-zneako-black" strokeWidth={2} />
+        <div className="mt-6 inline-flex items-center gap-2 md:gap-3 rounded-full border border-zneako-orange/25 bg-zneako-orange/8 py-1.5 pl-1.5 pr-4 md:pr-5">
+          <span className="flex items-center justify-center w-6 h-6 md:w-7 md:h-7 rounded-full bg-zneako-orange shrink-0">
+            <Award className="w-3 h-3 md:w-3.5 md:h-3.5 text-zneako-black" strokeWidth={2} />
           </span>
-          <span className="font-body text-xs text-black/70">
+          <span className="font-body text-[10.5px] md:text-xs text-black/70 whitespace-nowrap">
             Recipient of a rapid funding grant to support prototyping
           </span>
         </div>

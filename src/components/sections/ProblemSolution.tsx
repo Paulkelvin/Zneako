@@ -89,6 +89,17 @@ export default function ProblemSolution() {
               tonnes of tyre waste generated in the UK every year, much of it exported or
               processed through environmentally harmful methods.
             </p>
+            <p className="mt-2 font-body text-[11px] text-black/40">
+              Source:{' '}
+              <a
+                href="https://hansard.parliament.uk/commons/2025-04-29/debates/DF1C0690-5CAF-4B76-98FC-49F46D94ED16/RecyclingOfTyres"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-zneako-orange-deep"
+              >
+                UK Parliament, Westminster Hall debate on tyre recycling (29 Apr 2025)
+              </a>
+            </p>
             <p className="mt-6 font-body text-sm text-black/55 leading-relaxed border-t border-black/10 pt-6">
               In 2020, an illegal tyre stockpile in Bradford caught fire, a stark reminder that
               treating tyre waste as a disposal burden rather than a resource carries real

@@ -85,7 +85,7 @@ export default function Header() {
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-xs bg-zneako-black border-l border-white/10 flex flex-col gap-0"
+            className="w-full sm:max-w-xs bg-zneako-black border-l border-white/10 flex flex-col gap-0 top-16 bottom-0 h-auto"
           >
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <nav className="mt-16 flex flex-col gap-8">
