@@ -96,7 +96,10 @@ export default function Waitlist() {
             <br />
             FIRST 50.
           </h2>
-          <p className="mt-4 font-body text-sm text-black/65 leading-relaxed">
+          <p className="mt-4 font-body text-sm text-black/65 leading-relaxed md:hidden">
+            First 50 pairs, completely free — just join the waitlist.
+          </p>
+          <p className="mt-4 font-body text-sm text-black/65 leading-relaxed hidden md:block">
             We&apos;re giving away our first 50 pairs, completely free, to the families who join
             our waitlist first. No cost, just early access to help shape the future of sustainable
             footwear.
