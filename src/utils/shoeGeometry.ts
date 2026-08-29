@@ -18,10 +18,13 @@ function getUpperBound(x: number): number {
     const t = (x + 0.3) / 1.1;
     return 0.8 - t * 0.3;
   } else if (x < 1.55) {
+    // Tapers further toward the tip than a blunt rounded-off end would —
+    // real trainer toes read as a defined point from a distance, not a
+    // rounded blob, even though up close they're not a literal needle.
     const t = (x - 0.8) / 0.75;
-    return 0.5 - t * t * 0.15;
+    return 0.5 - t * t * 0.34;
   }
-  return 0.2;
+  return 0.16;
 }
 
 function getShoeHalfWidth(x: number, y: number): number {
@@ -29,7 +32,10 @@ function getShoeHalfWidth(x: number, y: number): number {
   if (x < -1.0) baseWidth = 0.28;
   else if (x < 0.0) baseWidth = 0.4;
   else if (x < 0.8) baseWidth = 0.42;
-  else baseWidth = 0.35 - (x - 0.8) * 0.15;
+  else {
+    const t = (x - 0.8) / 0.75;
+    baseWidth = 0.35 - t * t * 0.25;
+  }
 
   const heightNarrow = 1.0 - Math.max(0, y - 0.3) * 0.35;
   return baseWidth * heightNarrow;
