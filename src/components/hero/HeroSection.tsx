@@ -61,8 +61,12 @@ export default function HeroSection() {
           there — HeroOverlay's z-10 already keeps it above the scene. */}
       <HeroOverlay />
 
-      {/* 3D transformation — full-bleed on desktop, upper portion on mobile */}
-      <div className="relative h-[56vh] shrink-0 md:absolute md:inset-0 md:h-auto">
+      {/* 3D transformation — full-bleed on desktop, upper portion on mobile.
+          dvh (not vh) matters here: mobile Safari sizes vh against the
+          largest possible viewport (toolbar collapsed), so on page load —
+          when the address bar is still expanded — a vh box renders taller
+          than what's actually visible, pushing the art below the fold. */}
+      <div className="relative h-[56dvh] shrink-0 md:absolute md:inset-0 md:h-auto">
         {sceneReady ? (
           <HeroScene progress={progress} playing={isVisible} />
         ) : (
