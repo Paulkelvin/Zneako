@@ -46,7 +46,9 @@ export default function Header() {
         <a
           href="#"
           onClick={(e) => handleNavClick(e, '#')}
-          className="font-display text-lg md:text-xl font-bold tracking-[0.2em] text-white"
+          className={`font-display text-lg md:text-xl font-bold tracking-[0.2em] transition-colors duration-500 ${
+            scrolled ? 'text-white' : 'text-zneako-black'
+          }`}
         >
           ZNEAKO
         </a>
@@ -58,7 +60,9 @@ export default function Header() {
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="font-body text-sm tracking-wide text-zneako-sand hover:text-zneako-orange transition-colors duration-300"
+              className={`font-body text-sm tracking-wide hover:text-zneako-orange transition-colors duration-300 ${
+                scrolled ? 'text-zneako-sand' : 'text-black/60'
+              }`}
             >
               {link.label}
             </a>
@@ -71,7 +75,9 @@ export default function Header() {
             <button
               type="button"
               aria-label="Open menu"
-              className="md:hidden inline-flex items-center justify-center w-10 h-10 -mr-2 text-white"
+              className={`md:hidden inline-flex items-center justify-center w-10 h-10 -mr-2 transition-colors duration-500 ${
+                scrolled ? 'text-white' : 'text-zneako-black'
+              }`}
             >
               <Menu className="w-6 h-6" strokeWidth={1.5} />
             </button>

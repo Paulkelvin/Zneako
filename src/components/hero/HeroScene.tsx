@@ -90,7 +90,6 @@ export default function HeroScene({ progress, playing }: HeroSceneProps) {
         height: '100%',
       }}
     >
-      <color attach="background" args={['#0A0A0A']} />
       <Suspense fallback={null}>
         <HeroContent progress={progress} />
       </Suspense>

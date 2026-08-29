@@ -43,10 +43,12 @@ void main() {
   lit += rim * vec3(0.35, 0.32, 0.28);
   lit += spec * vec3(0.4, 0.38, 0.35);
 
-  // Depth fog
+  // Depth fog — fades toward the hero's own white background instead of
+  // near-black, so distant particles blend into the page rather than
+  // leaving a dark halo floating on a light backdrop.
   float depth = length(cameraPosition - vWorldPosition);
   float fog = 1.0 - smoothstep(20.0, 50.0, depth);
-  vec3 fogColor = vec3(0.04, 0.038, 0.035);
+  vec3 fogColor = vec3(1.0, 1.0, 1.0);
   vec3 finalColor = mix(fogColor, lit, fog);
 
   float alpha = vReveal * mix(0.9, 1.0, vProgress);
