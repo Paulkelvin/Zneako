@@ -43,10 +43,16 @@ function HeroContent({ progress }: { progress: number }) {
   // across the full ~15s cycle, not just a resting frame, since the
   // dissolve/drift animation pushes noticeably further than any static
   // pose does.
+  //
+  // offsetY is in Three.js world space, where +Y is up — a more negative
+  // value moves the group DOWN the screen, not up. Mobile's -0.7 (rather
+  // than a small positive number) reflects that; verify with real
+  // measurements when touching this; it does not behave like a CSS
+  // top-offset.
   const isMobile = size.width < 768;
   const offsetX = isMobile ? -0.15 : Math.min(viewport.width * 0.3, 2.4);
-  const offsetY = isMobile ? 0.88 : -0.2;
-  const groupScale = isMobile ? 0.9 : 0.55;
+  const offsetY = isMobile ? -0.7 : -0.2;
+  const groupScale = isMobile ? 1.0 : 0.55;
 
   return (
     <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, offsetY, 0]} scale={groupScale}>
