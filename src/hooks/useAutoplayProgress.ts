@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 
 // Cycle segments, in seconds — mirrors the forward tyre→shoe morph back
 // down to rubber→tyre using the same progress-driven shaders, just fed
-// in reverse. ~15s total, matching the brief's 12-16s target.
-const HOLD_TYRE = 1.5;
-const FORWARD = 6.5;
-const HOLD_SHOE = 1.5;
-const REVERSE = 5.5;
+// in reverse. Sped up from an original ~15s: most visitors scroll past
+// the hero within a few seconds, so a slow cycle meant many never saw
+// the transformation happen at all.
+const HOLD_TYRE = 1.0;
+const FORWARD = 3.2;
+const HOLD_SHOE = 1.0;
+const REVERSE = 2.8;
 const CYCLE = HOLD_TYRE + FORWARD + HOLD_SHOE + REVERSE;
 
 function easeInOutCubic(t: number): number {

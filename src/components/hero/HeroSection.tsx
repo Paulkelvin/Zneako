@@ -6,6 +6,7 @@ import { useAutoplayProgress } from '@/hooks/useAutoplayProgress';
 import { useInViewport } from '@/hooks/useInViewport';
 import HeroOverlay from './HeroOverlay';
 import HeroStateLabel from './HeroStateLabel';
+import HeroStageFrame from './HeroStageFrame';
 
 const ScenePlaceholder = () => (
   <div className="absolute inset-0 bg-white flex items-center justify-center">
@@ -67,6 +68,7 @@ export default function HeroSection() {
           when the address bar is still expanded — a vh box renders taller
           than what's actually visible, pushing the art below the fold. */}
       <div className="relative h-[56dvh] shrink-0 md:absolute md:inset-0 md:h-auto">
+        <HeroStageFrame />
         {sceneReady ? (
           <HeroScene progress={progress} playing={isVisible} />
         ) : (
