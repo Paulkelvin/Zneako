@@ -26,8 +26,12 @@ export interface TyreConfig {
 export const TYRE_MAJOR_R = 0.55;
 export const TYRE_MINOR_R = 0.24;
 
+// Shared with TyrePile.tsx's solid tyre mesh so the dissolve particles'
+// start positions line up with the visible tyre surface they erode from.
+export const TYRE_SCENE_SCALE = 1.6;
+
 export const STANDING_TYRE_CONFIG: TyreConfig = {
-  position: [-0.62, 0.42, -0.35],
+  position: [-0.42, 0.42, -0.35],
   rotation: [1.48, 0.32, 0.14],
   scale: 1.05,
 };
@@ -117,7 +121,7 @@ export function generateParticleData(particleCount: number): ParticleData {
   for (let i = 1; i < endPositions.length; i += 3) {
     endPositions[i] *= SHOE_HEIGHT_STRETCH;
   }
-  const startPositions = createTyreStartPositions(particleCount, 1.4);
+  const startPositions = createTyreStartPositions(particleCount, TYRE_SCENE_SCALE);
 
   const animSeeds = new Float32Array(particleCount * 3);
   const dampFactors = new Float32Array(particleCount);

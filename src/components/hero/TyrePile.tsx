@@ -3,7 +3,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { TYRE_CONFIGS, TYRE_MAJOR_R, TYRE_MINOR_R } from '@/utils/generateParticles';
+import { TYRE_CONFIGS, TYRE_MAJOR_R, TYRE_MINOR_R, TYRE_SCENE_SCALE } from '@/utils/generateParticles';
 import vertexShader from '@/shaders/tyre.vert.glsl';
 import fragmentShader from '@/shaders/tyre.frag.glsl';
 
@@ -11,7 +11,7 @@ interface TyrePileProps {
   progress: number;
 }
 
-const SCENE_SCALE = 1.4;
+const SCENE_SCALE = TYRE_SCENE_SCALE;
 
 // Real car/truck tyre cross-section: narrow bead, steep near-vertical
 // sidewall, a distinct shoulder, then a WIDE FLAT tread band — not a single
