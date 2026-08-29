@@ -45,8 +45,8 @@ function HeroContent({ progress }: { progress: number }) {
   // pose does.
   const isMobile = size.width < 768;
   const offsetX = isMobile ? -0.15 : Math.min(viewport.width * 0.3, 2.4);
-  const offsetY = isMobile ? 0.95 : -0.2;
-  const groupScale = isMobile ? 1.0 : 0.55;
+  const offsetY = isMobile ? 0.88 : -0.2;
+  const groupScale = isMobile ? 0.9 : 0.55;
 
   return (
     <group rotation={[0.15, -0.4, 0.03]} position={[offsetX, offsetY, 0]} scale={groupScale}>

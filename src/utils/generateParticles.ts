@@ -13,12 +13,9 @@ export interface ParticleData {
 // ── Tyre staging ──
 //
 // Two tyres, deliberately posed rather than physics-dropped: one stands
-// upright and never dissolves — a constant "this is where it started"
-// anchor for the whole loop — while the other lies flat and is the one
-// that actually erodes into the rubber cloud that becomes the shoe. A
-// scattered heap didn't read as "tyre" at a glance; a single unmistakable
-// standing tyre does, and it gives the transformation something concrete
-// to compare itself against instead of dissolving into ambiguity.
+// upright, one lies flat — a real staged scene rather than a scattered
+// heap, which is what actually reads as "tyre" at a glance. Both erode
+// into the same rubber cloud that becomes the shoe.
 
 export interface TyreConfig {
   position: [number, number, number];
@@ -29,19 +26,19 @@ export interface TyreConfig {
 export const TYRE_MAJOR_R = 0.55;
 export const TYRE_MINOR_R = 0.24;
 
-// Never dissolves — rendered every frame regardless of progress.
-export const ANCHOR_TYRE_CONFIG: TyreConfig = {
+export const STANDING_TYRE_CONFIG: TyreConfig = {
   position: [-0.62, 0.42, -0.35],
   rotation: [1.48, 0.32, 0.14],
   scale: 1.05,
 };
 
-// The one that erodes into the rubber particle cloud below.
-export const EXPLODING_TYRE_CONFIG: TyreConfig = {
+export const LYING_TYRE_CONFIG: TyreConfig = {
   position: [0.08, -0.16, 0.32],
   rotation: [0.08, 0.55, 0.04],
   scale: 1.0,
 };
+
+export const TYRE_CONFIGS: TyreConfig[] = [STANDING_TYRE_CONFIG, LYING_TYRE_CONFIG];
 
 function rotateEulerXYZ(
   x: number, y: number, z: number,
@@ -60,40 +57,42 @@ function rotateEulerXYZ(
 
 function createTyreStartPositions(particleCount: number, scale: number): Float32Array {
   const positions = new Float32Array(particleCount * 3);
-  const cfg = EXPLODING_TYRE_CONFIG;
-  const majorR = TYRE_MAJOR_R * cfg.scale;
-  const minorR = TYRE_MINOR_R * cfg.scale;
+  const perTyre = Math.floor(particleCount / TYRE_CONFIGS.length);
 
-  // Only the exploding tyre feeds the cloud — the anchor tyre never
-  // dissolves, so it never needs particles of its own. That puts the
-  // whole particle budget into this one tyre instead of splitting it six
-  // ways, which reads as a denser, more convincing single-source erosion.
-  for (let i = 0; i < particleCount; i++) {
-    const u = Math.random() * Math.PI * 2;
-    const v = Math.random() * Math.PI * 2;
+  for (let t = 0; t < TYRE_CONFIGS.length; t++) {
+    const cfg = TYRE_CONFIGS[t];
+    const start = t * perTyre;
+    const count = t === TYRE_CONFIGS.length - 1 ? particleCount - start : perTyre;
+    const majorR = TYRE_MAJOR_R * cfg.scale;
+    const minorR = TYRE_MINOR_R * cfg.scale;
 
-    let r: number;
-    if (Math.random() < 0.6) {
-      r = minorR * (0.82 + Math.random() * 0.18);
-    } else {
-      r = minorR * Math.sqrt(Math.random());
+    for (let i = 0; i < count; i++) {
+      const u = Math.random() * Math.PI * 2;
+      const v = Math.random() * Math.PI * 2;
+
+      let r: number;
+      if (Math.random() < 0.6) {
+        r = minorR * (0.82 + Math.random() * 0.18);
+      } else {
+        r = minorR * Math.sqrt(Math.random());
+      }
+
+      // Canonical torus with its hole axis along Y — matches the
+      // (unrotated) LatheGeometry axis in TyrePile.
+      const lx = (majorR + r * Math.cos(v)) * Math.cos(u);
+      const lz = (majorR + r * Math.cos(v)) * Math.sin(u);
+      const ly = r * Math.sin(v);
+
+      const [rx, ry, rz] = rotateEulerXYZ(
+        lx, ly, lz,
+        cfg.rotation[0], cfg.rotation[1], cfg.rotation[2]
+      );
+
+      const idx = (start + i) * 3;
+      positions[idx] = (rx + cfg.position[0]) * scale;
+      positions[idx + 1] = (ry + cfg.position[1]) * scale;
+      positions[idx + 2] = (rz + cfg.position[2]) * scale;
     }
-
-    // Canonical torus with its hole axis along Y — matches the
-    // (unrotated) LatheGeometry axis in TyrePile.
-    const lx = (majorR + r * Math.cos(v)) * Math.cos(u);
-    const lz = (majorR + r * Math.cos(v)) * Math.sin(u);
-    const ly = r * Math.sin(v);
-
-    const [rx, ry, rz] = rotateEulerXYZ(
-      lx, ly, lz,
-      cfg.rotation[0], cfg.rotation[1], cfg.rotation[2]
-    );
-
-    const idx = i * 3;
-    positions[idx] = (rx + cfg.position[0]) * scale;
-    positions[idx + 1] = (ry + cfg.position[1]) * scale;
-    positions[idx + 2] = (rz + cfg.position[2]) * scale;
   }
 
   return positions;
@@ -104,11 +103,20 @@ function createTyreStartPositions(particleCount: number, scale: number): Float32
 // MeshSurfaceSampler — see shoeGeometry.ts — rather than scattered inside a
 // 2D silhouette. Swapping in the actual Zneako shoe GLB later only means
 // changing what geometry gets sampled there; nothing here needs to change.
+//
+// Stretched taller (not wider) after sampling: the mobile frame has more
+// vertical room to give the formed shoe than horizontal (widening it risks
+// the same edge-bleed the tyre positions are calibrated against), so only
+// the y-axis gets the extra reach.
+const SHOE_HEIGHT_STRETCH = 1.2;
 
 // ── Main generator ──
 
 export function generateParticleData(particleCount: number): ParticleData {
   const endPositions = createShoeParticlePositions(particleCount);
+  for (let i = 1; i < endPositions.length; i += 3) {
+    endPositions[i] *= SHOE_HEIGHT_STRETCH;
+  }
   const startPositions = createTyreStartPositions(particleCount, 1.4);
 
   const animSeeds = new Float32Array(particleCount * 3);
