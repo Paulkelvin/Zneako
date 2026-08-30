@@ -6,6 +6,7 @@ interface TeamMember {
   role: string;
   bio?: string;
   photo?: string;
+  photoClassName?: string;
 }
 
 const TEAM: TeamMember[] = [
@@ -24,7 +25,8 @@ const TEAM: TeamMember[] = [
     name: 'Professor Klaus Pors',
     role: 'Academic Co-Founder, Institute of Cancer Therapeutics',
     bio: 'Provides strategic oversight, ensuring alignment with research, innovation and commercialisation priorities.',
-    photo: '/team/klaus-pors.jpg',
+    photo: '/team/klaus-pors.png',
+    photoClassName: 'scale-100 origin-top',
   },
   { name: 'Bonnie Clyde', role: 'Innovation Officer' },
 ];
@@ -98,7 +100,7 @@ export default function TeamStory() {
                       alt={member.name}
                       fill
                       sizes="(min-width: 768px) 25vw, 60vw"
-                      className="object-cover object-top scale-110 origin-top"
+                      className={`object-cover object-top ${member.photoClassName ?? 'scale-110 origin-top'}`}
                     />
                   </div>
                 ) : (
