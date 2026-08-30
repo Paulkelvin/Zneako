@@ -12,6 +12,7 @@ export default defineType({
     defineField({ name: 'email', title: 'Email', type: 'string', readOnly: true }),
     defineField({ name: 'organization', title: 'Company / Organization', type: 'string', readOnly: true }),
     defineField({ name: 'message', title: 'Message', type: 'text', readOnly: true }),
+    defineField({ name: 'signupIp', title: 'Signup IP', type: 'string', readOnly: true }),
   ],
   preview: {
     select: { title: 'name', subtitle: 'email' },

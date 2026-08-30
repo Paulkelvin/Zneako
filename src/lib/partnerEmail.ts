@@ -1,3 +1,5 @@
+import { escapeHtml } from './htmlEscape';
+
 export function partnerInquiryEmail(params: {
   name: string;
   email: string;
@@ -5,6 +7,10 @@ export function partnerInquiryEmail(params: {
   message: string;
 }) {
   const { name, email, organization, message } = params;
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeOrganization = escapeHtml(organization);
+  const safeMessage = escapeHtml(message);
 
   const html = `
   <div style="background:#0e0d0c;padding:40px 24px;font-family:Helvetica,Arial,sans-serif;">
@@ -14,20 +20,20 @@ export function partnerInquiryEmail(params: {
       <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
         <tr>
           <td style="padding:6px 0;font-size:12px;color:rgba(245,241,232,0.5);width:110px;">Name</td>
-          <td style="padding:6px 0;font-size:14px;color:#f5f1e8;">${name}</td>
+          <td style="padding:6px 0;font-size:14px;color:#f5f1e8;">${safeName}</td>
         </tr>
         <tr>
           <td style="padding:6px 0;font-size:12px;color:rgba(245,241,232,0.5);">Email</td>
-          <td style="padding:6px 0;font-size:14px;color:#f5f1e8;">${email}</td>
+          <td style="padding:6px 0;font-size:14px;color:#f5f1e8;">${safeEmail}</td>
         </tr>
         <tr>
           <td style="padding:6px 0;font-size:12px;color:rgba(245,241,232,0.5);">Organization</td>
-          <td style="padding:6px 0;font-size:14px;color:#f5f1e8;">${organization || '—'}</td>
+          <td style="padding:6px 0;font-size:14px;color:#f5f1e8;">${safeOrganization || '—'}</td>
         </tr>
       </table>
       <div style="border:1px solid rgba(200,184,145,0.2);border-radius:8px;padding:14px 16px;">
         <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,241,232,0.5);">Message</p>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#f5f1e8;white-space:pre-wrap;">${message}</p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#f5f1e8;white-space:pre-wrap;">${safeMessage}</p>
       </div>
     </div>
   </div>`;

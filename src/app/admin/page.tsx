@@ -77,10 +77,16 @@ export default function AdminPage() {
         setInquiries(i);
       })
       .catch((err) => {
-        setLoadError(err.message);
         if (err.message === 'Incorrect password.') {
+          // A stored secret can go stale if ADMIN_SECRET changes elsewhere
+          // (e.g. rotated in Vercel) while this browser still has the old
+          // one cached — drop back to the login screen with the reason
+          // visible there instead of silently clearing to a blank form.
           sessionStorage.removeItem(STORAGE_KEY);
           setSecret(null);
+          setAuthError('Your saved password no longer works — please log in again.');
+        } else {
+          setLoadError(err.message);
         }
       });
   }, [secret]);

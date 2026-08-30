@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sanityServerClient } from '@/lib/sanityServer';
+import { isAuthorizedAdmin } from '@/lib/adminAuth';
 
 const EARLY_SLOTS = 35;
 const REFERRAL_SLOTS = 15;
@@ -13,8 +14,7 @@ type Signup = {
 // Recomputes selection from scratch every run, so it's safe to re-run as more
 // signups come in before the cutoff — it never just appends to a prior result.
 export async function POST(req: NextRequest) {
-  const auth = req.headers.get('authorization');
-  if (auth !== `Bearer ${process.env.ADMIN_SECRET}`) {
+  if (!isAuthorizedAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

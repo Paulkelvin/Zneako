@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sanityServerClient } from '@/lib/sanityServer';
+import { isAuthorizedAdmin } from '@/lib/adminAuth';
 
 type PartnerInquiry = {
   _id: string;
@@ -10,13 +11,8 @@ type PartnerInquiry = {
   _createdAt: string;
 };
 
-function isAuthorized(req: NextRequest): boolean {
-  const auth = req.headers.get('authorization');
-  return Boolean(process.env.ADMIN_SECRET) && auth === `Bearer ${process.env.ADMIN_SECRET}`;
-}
-
 export async function GET(req: NextRequest) {
-  if (!isAuthorized(req)) {
+  if (!isAuthorizedAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

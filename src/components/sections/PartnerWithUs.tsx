@@ -76,6 +76,7 @@ export default function PartnerWithUs() {
                   id="partner-name"
                   type="text"
                   required
+                  maxLength={200}
                   placeholder="Jane Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -94,6 +95,7 @@ export default function PartnerWithUs() {
                   id="partner-email"
                   type="email"
                   required
+                  maxLength={254}
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -111,6 +113,7 @@ export default function PartnerWithUs() {
                 <Input
                   id="partner-org"
                   type="text"
+                  maxLength={200}
                   placeholder="Optional"
                   value={organization}
                   onChange={(e) => setOrganization(e.target.value)}
@@ -129,6 +132,7 @@ export default function PartnerWithUs() {
                   id="partner-message"
                   required
                   rows={3}
+                  maxLength={5000}
                   placeholder="Tell us a bit about your interest."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
