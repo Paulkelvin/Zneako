@@ -42,6 +42,7 @@ export default function Waitlist() {
   const [errorMessage, setErrorMessage] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [referralCount, setReferralCount] = useState(0);
+  const [totalSignups, setTotalSignups] = useState(0);
   const [refParam, setRefParam] = useState<string | null>(null);
   const [origin, setOrigin] = useState('');
 
@@ -73,6 +74,7 @@ export default function Waitlist() {
 
       setReferralCode(data.referralCode);
       setReferralCount(data.referralCount ?? 0);
+      setTotalSignups(data.totalSignups ?? 0);
       setState('success');
     } catch {
       setErrorMessage('Something went wrong. Please try again.');
@@ -186,13 +188,27 @@ export default function Waitlist() {
                 <p className="font-display text-lg font-semibold text-zneako-black">
                   You&apos;re on the list.
                 </p>
-                <p className="mt-1 font-body text-sm text-black/60 leading-relaxed md:hidden">
-                  Share your link to boost your chances.
-                </p>
-                <p className="mt-1 font-body text-sm text-black/60 leading-relaxed hidden md:block">
-                  The first 35 signups get a free pair, guaranteed. The next 15 pairs go to our
-                  top referrers — share your link to boost your chances.
-                </p>
+                {totalSignups <= 35 ? (
+                  <>
+                    <p className="mt-1 font-body text-sm text-black/60 leading-relaxed md:hidden">
+                      You&apos;re #{totalSignups} — your pair is guaranteed.
+                    </p>
+                    <p className="mt-1 font-body text-sm text-black/60 leading-relaxed hidden md:block">
+                      You&apos;re number {totalSignups} of the first 35 — your pair is guaranteed.
+                      Share your link to help us reach more families.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-1 font-body text-sm text-black/60 leading-relaxed md:hidden">
+                      Share your link to boost your chances.
+                    </p>
+                    <p className="mt-1 font-body text-sm text-black/60 leading-relaxed hidden md:block">
+                      The first 35 guaranteed spots are filled. You&apos;re now in the running for
+                      one of the next 15 — share your link to boost your chances.
+                    </p>
+                  </>
+                )}
               </div>
 
               <div className="rounded-lg border border-black/10 bg-zneako-cream px-4 py-3">

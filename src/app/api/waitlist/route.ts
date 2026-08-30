@@ -47,9 +47,13 @@ export async function POST(req: NextRequest) {
   );
 
   if (existing) {
+    const totalSignups = await sanityServerClient.fetch<number>(
+      `count(*[_type == "waitlistSignup"])`
+    );
     return NextResponse.json({
       referralCode: existing.referralCode,
       referralCount: existing.referralCount ?? 0,
+      totalSignups,
       alreadyJoined: true,
     });
   }
@@ -98,10 +102,15 @@ export async function POST(req: NextRequest) {
     await sanityServerClient.patch(effectiveReferrer._id).inc({ referralCount: 1 }).commit();
   }
 
+  const totalSignups = await sanityServerClient.fetch<number>(
+    `count(*[_type == "waitlistSignup"])`
+  );
+
   if (resend) {
     const { subject, html, text } = waitlistConfirmationEmail({
       referralCode: created.referralCode,
       origin: req.nextUrl.origin,
+      totalSignups,
     });
     try {
       await resend.emails.send({ from: WAITLIST_FROM_EMAIL, to: email, subject, html, text });
@@ -113,6 +122,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     referralCode: created.referralCode,
     referralCount: 0,
+    totalSignups,
     alreadyJoined: false,
   });
 }

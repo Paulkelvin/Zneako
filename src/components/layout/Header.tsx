@@ -16,6 +16,7 @@ import {
 const NAV_LINKS = [
   { label: 'Home', href: '#' },
   { label: 'Discover', href: '#discover' },
+  { label: 'Partner With Us', href: '#partner' },
 ];
 
 export default function Header() {

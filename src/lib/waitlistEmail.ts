@@ -1,6 +1,14 @@
-export function waitlistConfirmationEmail(params: { referralCode: string; origin: string }) {
+export function waitlistConfirmationEmail(params: {
+  referralCode: string;
+  origin: string;
+  totalSignups: number;
+}) {
   const referralLink = `${params.origin.replace(/^https?:\/\//, '')}/?ref=${params.referralCode}`;
   const referralUrl = `${params.origin}/?ref=${params.referralCode}`;
+  const statusCopy =
+    params.totalSignups <= 35
+      ? `You&rsquo;re number ${params.totalSignups} of the first 35 &mdash; your pair is guaranteed. Share your link below to help us reach more families.`
+      : `The first 35 guaranteed spots are filled. You&rsquo;re now in the running for one of the next 15 &mdash; share your link below to boost your chances.`;
 
   const html = `
   <div style="background:#0e0d0c;padding:40px 24px;font-family:Helvetica,Arial,sans-serif;">
@@ -8,8 +16,7 @@ export function waitlistConfirmationEmail(params: { referralCode: string; origin
       <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#d4af37;">Limited Access</p>
       <h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#f5f1e8;">You&rsquo;re on the Zneako waitlist.</h1>
       <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:rgba(245,241,232,0.7);">
-        The first 35 signups get a free pair, guaranteed. The next 15 pairs go to our top
-        referrers &mdash; share your link below to boost your chances.
+        ${statusCopy}
       </p>
       <div style="border:1px solid rgba(200,184,145,0.2);border-radius:8px;padding:14px 16px;margin-bottom:8px;">
         <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,241,232,0.5);">Your referral link</p>
@@ -21,9 +28,14 @@ export function waitlistConfirmationEmail(params: { referralCode: string; origin
     </div>
   </div>`;
 
+  const textStatusCopy =
+    params.totalSignups <= 35
+      ? `You're number ${params.totalSignups} of the first 35 — your pair is guaranteed. Share your link below to help us reach more families.`
+      : `The first 35 guaranteed spots are filled. You're now in the running for one of the next 15 — share your link below to boost your chances.`;
+
   const text = `You're on the Zneako waitlist.
 
-The first 35 signups get a free pair, guaranteed. The next 15 pairs go to our top referrers — share your link below to boost your chances.
+${textStatusCopy}
 
 Your referral link: ${referralUrl}
 
