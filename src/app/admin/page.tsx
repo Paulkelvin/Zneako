@@ -100,6 +100,11 @@ export default function AdminPage() {
       await fetchWithAuth<Signup[]>('/api/admin/waitlist', passwordInput, 'signups');
       sessionStorage.setItem(STORAGE_KEY, passwordInput);
       setSecret(passwordInput);
+      // On mobile, focusing the password field can scroll the page (the
+      // keyboard pushes the viewport up); that scroll position otherwise
+      // carries over into the dashboard view, making it look like it opened
+      // mid-scroll instead of at the top.
+      window.scrollTo({ top: 0 });
     } catch (err) {
       setAuthError(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
@@ -179,25 +184,25 @@ export default function AdminPage() {
   const referralTierCount = signups?.filter((s) => s.selectionTier === 'referral').length ?? 0;
 
   return (
-    <main className="min-h-screen px-6 py-10 md:px-12">
+    <main className="min-h-screen px-4 py-6 sm:px-6 sm:py-10 md:px-12">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <Image
             src="/brand/zneako-logo-lockup.png"
             alt="Zneako"
             width={719}
             height={163}
-            className="h-8 w-auto"
+            className="h-7 sm:h-8 w-auto shrink-0"
           />
           <button
             onClick={handleLogout}
-            className="text-xs uppercase tracking-wide text-black/50 hover:text-zneako-black"
+            className="shrink-0 text-xs uppercase tracking-wide text-black/50 hover:text-zneako-black"
           >
             Log out
           </button>
         </div>
 
-        <div className="mt-6 flex gap-2">
+        <div className="mt-6 flex flex-wrap gap-2">
           <button
             onClick={() => setTab('waitlist')}
             className={`rounded-full px-4 py-1.5 text-xs uppercase tracking-wide transition-colors ${
@@ -220,26 +225,29 @@ export default function AdminPage() {
 
         {tab === 'waitlist' && signups && (
           <>
-            <div className="mt-6 grid grid-cols-3 gap-4">
-              <div className="rounded-lg border border-black/10 bg-white p-5">
-                <p className="font-display text-3xl font-bold text-zneako-black">{signups.length}</p>
-                <p className="mt-1 text-xs uppercase tracking-wide text-black/50">Total signups</p>
+            <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="rounded-lg border border-black/10 bg-white p-3 sm:p-5">
+                <p className="font-display text-lg sm:text-3xl font-bold text-zneako-black">{signups.length}</p>
+                <p className="mt-1 text-[10px] sm:text-xs uppercase tracking-wide text-black/50">Total signups</p>
               </div>
-              <div className="rounded-lg border border-black/10 bg-white p-5">
-                <p className="font-display text-3xl font-bold text-zneako-orange-deep">
+              <div className="rounded-lg border border-black/10 bg-white p-3 sm:p-5">
+                <p className="font-display text-lg sm:text-3xl font-bold text-zneako-orange-deep">
                   {earlyCount}/{EARLY_SLOTS}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-wide text-black/50">Early tier selected</p>
+                <p className="mt-1 text-[10px] sm:text-xs uppercase tracking-wide text-black/50">Early tier</p>
               </div>
-              <div className="rounded-lg border border-black/10 bg-white p-5">
-                <p className="font-display text-3xl font-bold text-zneako-green-deep">
+              <div className="rounded-lg border border-black/10 bg-white p-3 sm:p-5">
+                <p className="font-display text-lg sm:text-3xl font-bold text-zneako-green-deep">
                   {referralTierCount}/{REFERRAL_SLOTS}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-wide text-black/50">Referral tier selected</p>
+                <p className="mt-1 text-[10px] sm:text-xs uppercase tracking-wide text-black/50">Referral tier</p>
               </div>
             </div>
 
-            <div className="mt-8 overflow-x-auto rounded-lg border border-black/10 bg-white">
+            {/* Table on sm+; a stacked card list on mobile instead of a
+                horizontally-scrolling table whose extra columns would be
+                hidden off-screen with no obvious way to reach them. */}
+            <div className="mt-6 sm:mt-8 hidden sm:block overflow-x-auto rounded-lg border border-black/10 bg-white">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-black/45">
@@ -296,41 +304,102 @@ export default function AdminPage() {
                 </tbody>
               </table>
             </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:hidden">
+              {signups.map((s, i) => (
+                <div key={s._id} className="rounded-lg border border-black/10 bg-white p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm text-zneako-black break-all">
+                      <span className="text-black/40">#{i + 1}</span> {s.email}
+                    </p>
+                    {s.selectionTier && (
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] uppercase ${
+                          s.selectionTier === 'early'
+                            ? 'bg-zneako-orange/15 text-zneako-orange-deep'
+                            : 'bg-zneako-green/15 text-zneako-green-deep'
+                        }`}
+                      >
+                        {s.selectionTier}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/55">
+                    <span>Age {s.ageRange}</span>
+                    <span>{formatDate(s._createdAt)}</span>
+                    <span>{s.referralCount} referral{s.referralCount === 1 ? '' : 's'}</span>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteSignup(s._id, s.email)}
+                    disabled={deletingId === s._id}
+                    className="mt-3 text-xs uppercase tracking-wide text-red-600 disabled:opacity-40"
+                  >
+                    {deletingId === s._id ? 'Removing…' : 'Remove'}
+                  </button>
+                </div>
+              ))}
+              {signups.length === 0 && (
+                <p className="rounded-lg border border-black/10 bg-white px-4 py-8 text-center text-black/40 text-sm">
+                  No signups yet.
+                </p>
+              )}
+            </div>
           </>
         )}
 
         {tab === 'partners' && inquiries && (
-          <div className="mt-8 overflow-x-auto rounded-lg border border-black/10 bg-white">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-black/45">
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Email</th>
-                  <th className="px-4 py-3 font-medium">Company / Organization</th>
-                  <th className="px-4 py-3 font-medium">Message</th>
-                  <th className="px-4 py-3 font-medium">Received</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inquiries.map((inq) => (
-                  <tr key={inq._id} className="border-b border-black/5 last:border-0 align-top">
-                    <td className="px-4 py-3 text-zneako-black whitespace-nowrap">{inq.name}</td>
-                    <td className="px-4 py-3 text-black/65 whitespace-nowrap">{inq.email}</td>
-                    <td className="px-4 py-3 text-black/65 whitespace-nowrap">{inq.organization || '—'}</td>
-                    <td className="px-4 py-3 text-black/65 max-w-sm">{inq.message}</td>
-                    <td className="px-4 py-3 text-black/65 whitespace-nowrap">{formatDate(inq._createdAt)}</td>
+          <>
+            <div className="mt-6 sm:mt-8 hidden sm:block overflow-x-auto rounded-lg border border-black/10 bg-white">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-black/45">
+                    <th className="px-4 py-3 font-medium">Name</th>
+                    <th className="px-4 py-3 font-medium">Email</th>
+                    <th className="px-4 py-3 font-medium">Company / Organization</th>
+                    <th className="px-4 py-3 font-medium">Message</th>
+                    <th className="px-4 py-3 font-medium">Received</th>
                   </tr>
-                ))}
-                {inquiries.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-black/40">
-                      No partner inquiries yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {inquiries.map((inq) => (
+                    <tr key={inq._id} className="border-b border-black/5 last:border-0 align-top">
+                      <td className="px-4 py-3 text-zneako-black whitespace-nowrap">{inq.name}</td>
+                      <td className="px-4 py-3 text-black/65 whitespace-nowrap">{inq.email}</td>
+                      <td className="px-4 py-3 text-black/65 whitespace-nowrap">{inq.organization || '—'}</td>
+                      <td className="px-4 py-3 text-black/65 max-w-sm">{inq.message}</td>
+                      <td className="px-4 py-3 text-black/65 whitespace-nowrap">{formatDate(inq._createdAt)}</td>
+                    </tr>
+                  ))}
+                  {inquiries.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-8 text-center text-black/40">
+                        No partner inquiries yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:hidden">
+              {inquiries.map((inq) => (
+                <div key={inq._id} className="rounded-lg border border-black/10 bg-white p-4">
+                  <p className="text-sm font-semibold text-zneako-black">{inq.name}</p>
+                  <p className="mt-0.5 text-xs text-black/55 break-all">{inq.email}</p>
+                  {inq.organization && (
+                    <p className="mt-0.5 text-xs text-black/55">{inq.organization}</p>
+                  )}
+                  <p className="mt-2 text-sm text-black/65">{inq.message}</p>
+                  <p className="mt-2 text-xs text-black/40">{formatDate(inq._createdAt)}</p>
+                </div>
+              ))}
+              {inquiries.length === 0 && (
+                <p className="rounded-lg border border-black/10 bg-white px-4 py-8 text-center text-black/40 text-sm">
+                  No partner inquiries yet.
+                </p>
+              )}
+            </div>
+          </>
         )}
       </div>
     </main>
