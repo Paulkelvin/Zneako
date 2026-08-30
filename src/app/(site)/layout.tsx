@@ -17,7 +17,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Zneako — The Part You Don\'t See Matters Just As Much',
+  title: 'Zneako: The Part You Don\'t See Matters Just As Much',
   description: 'Durable children\'s trainers made with reclaimed tyre rubber. Reducing waste. Rethinking materials. Redefining footwear.',
 };
 
