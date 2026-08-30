@@ -37,21 +37,15 @@ export default function Header() {
       }`}
     >
       <div className="flex items-center justify-between px-6 md:px-16 lg:px-24 h-16 md:h-20">
-        <a
-          href="#"
-          onClick={(e) => handleNavClick(e, '#')}
-          className={`flex items-center gap-2.5 font-display text-lg md:text-xl font-bold tracking-[0.2em] transition-colors duration-500 ${
-            scrolled ? 'text-white' : 'text-zneako-black'
-          }`}
-        >
+        <a href="#" onClick={(e) => handleNavClick(e, '#')} className="flex items-center">
           <Image
-            src="/brand/zneako-icon-square.png"
-            alt=""
-            width={32}
-            height={32}
-            className="w-7 h-7 md:w-8 md:h-8 rounded-full"
+            src="/brand/zneako-logo-lockup.png"
+            alt="Zneako"
+            width={719}
+            height={163}
+            priority
+            className="h-8 md:h-9 w-auto"
           />
-          ZNEAKO
         </a>
 
         {/* Desktop nav */}

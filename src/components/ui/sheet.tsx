@@ -21,7 +21,10 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-40 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      // top-16 (not inset-0) so the overlay never renders behind the header —
+      // at the top of the page the header is transparent, so a dark overlay
+      // sitting under it (even at a lower z-index) shows straight through.
+      "fixed top-16 inset-x-0 bottom-0 z-40 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -64,7 +67,11 @@ const SheetContent = React.forwardRef<
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
-      <SheetPrimitive.Close className="absolute right-4 top-4 inline-flex items-center justify-center transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none disabled:pointer-events-none">
+      {/* right-6 matches the header trigger's own right edge: its w-10
+          button has -mr-2 inside the header's px-6 padding, which puts the
+          Menu icon's right edge exactly at 24px (right-6) from the screen
+          edge — lining this up so the X sits directly under the hamburger. */}
+      <SheetPrimitive.Close className="absolute right-6 top-4 inline-flex items-center justify-center transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none disabled:pointer-events-none">
         <X className="h-6 w-6 text-white" strokeWidth={1.5} />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
