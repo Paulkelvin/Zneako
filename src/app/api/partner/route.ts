@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sanityServerClient } from '@/lib/sanityServer';
 import { resend, WAITLIST_FROM_EMAIL } from '@/lib/resend';
 import { partnerInquiryEmail } from '@/lib/partnerEmail';
 
@@ -25,29 +26,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'A message is required' }, { status: 400 });
   }
 
-  const destination = process.env.PARTNER_INQUIRY_EMAIL;
-  if (!resend || !destination) {
-    console.error('Partner inquiry received but email is not configured (PARTNER_INQUIRY_EMAIL / RESEND_API_KEY missing)');
-    return NextResponse.json(
-      { error: 'Partner inquiries are not yet accepting submissions. Please try again later.' },
-      { status: 500 }
-    );
-  }
-
-  const { subject, html, text } = partnerInquiryEmail({ name, email, organization, message });
-
   try {
-    await resend.emails.send({
-      from: WAITLIST_FROM_EMAIL,
-      to: destination,
-      replyTo: email,
-      subject,
-      html,
-      text,
+    await sanityServerClient.create({
+      _type: 'partnerInquiry',
+      name,
+      email,
+      organization,
+      message,
     });
   } catch (err) {
-    console.error('Failed to send partner inquiry email', err);
+    console.error('Failed to save partner inquiry', err);
     return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
+  }
+
+  const destination = process.env.PARTNER_INQUIRY_EMAIL;
+  if (resend && destination) {
+    const { subject, html, text } = partnerInquiryEmail({ name, email, organization, message });
+    try {
+      await resend.emails.send({
+        from: WAITLIST_FROM_EMAIL,
+        to: destination,
+        replyTo: email,
+        subject,
+        html,
+        text,
+      });
+    } catch (err) {
+      // Non-fatal: the inquiry is already saved and visible in /admin even if the
+      // notification email fails or PARTNER_INQUIRY_EMAIL isn't set yet.
+      console.error('Failed to send partner inquiry email', err);
+    }
   }
 
   return NextResponse.json({ ok: true });

@@ -28,6 +28,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${poppins.variable} ${plusJakartaSans.variable}`}>
+      <head>
+        {/* Browsers restore the previous scroll offset on reload by default
+            (history.scrollRestoration === 'auto'), so refreshing a scrolled
+            page lands back where you were instead of at the top. Runs inline
+            and early so it takes effect before the browser's own restore.
+            A URL with a #hash still scrolls to that section on load — that's
+            separate, unaffected browser behavior. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }`,
+          }}
+        />
+      </head>
       <body className="antialiased">
         <Header />
         {children}

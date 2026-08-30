@@ -15,6 +15,15 @@ interface Signup {
   _createdAt: string;
 }
 
+interface PartnerInquiry {
+  _id: string;
+  name: string;
+  email: string;
+  organization: string | null;
+  message: string;
+  _createdAt: string;
+}
+
 const STORAGE_KEY = 'zneako_admin_secret';
 const EARLY_SLOTS = 35;
 const REFERRAL_SLOTS = 15;
@@ -27,13 +36,26 @@ function formatDate(iso: string): string {
   });
 }
 
+async function fetchWithAuth<T>(url: string, secret: string, key: string): Promise<T> {
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${secret}` } });
+  if (!res.ok) {
+    if (res.status === 401) throw new Error('Incorrect password.');
+    throw new Error('Something went wrong loading data.');
+  }
+  const data = await res.json();
+  return data[key] as T;
+}
+
 export default function AdminPage() {
   const [secret, setSecret] = useState<string | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
 
+  const [tab, setTab] = useState<'waitlist' | 'partners'>('waitlist');
+
   const [signups, setSignups] = useState<Signup[] | null>(null);
+  const [inquiries, setInquiries] = useState<PartnerInquiry[] | null>(null);
   const [loadError, setLoadError] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -42,23 +64,17 @@ export default function AdminPage() {
     if (stored) setSecret(stored);
   }, []);
 
-  const loadSignups = async (withSecret: string) => {
-    const res = await fetch('/api/admin/waitlist', {
-      headers: { Authorization: `Bearer ${withSecret}` },
-    });
-    if (!res.ok) {
-      if (res.status === 401) throw new Error('Incorrect password.');
-      throw new Error('Something went wrong loading signups.');
-    }
-    const data = await res.json();
-    return data.signups as Signup[];
-  };
-
   useEffect(() => {
     if (!secret) return;
     setLoadError('');
-    loadSignups(secret)
-      .then(setSignups)
+    Promise.all([
+      fetchWithAuth<Signup[]>('/api/admin/waitlist', secret, 'signups'),
+      fetchWithAuth<PartnerInquiry[]>('/api/admin/partner-inquiries', secret, 'inquiries'),
+    ])
+      .then(([s, i]) => {
+        setSignups(s);
+        setInquiries(i);
+      })
       .catch((err) => {
         setLoadError(err.message);
         if (err.message === 'Incorrect password.') {
@@ -74,7 +90,7 @@ export default function AdminPage() {
     setAuthLoading(true);
     setAuthError('');
     try {
-      await loadSignups(passwordInput);
+      await fetchWithAuth<Signup[]>('/api/admin/waitlist', passwordInput, 'signups');
       sessionStorage.setItem(STORAGE_KEY, passwordInput);
       setSecret(passwordInput);
     } catch (err) {
@@ -88,10 +104,11 @@ export default function AdminPage() {
     sessionStorage.removeItem(STORAGE_KEY);
     setSecret(null);
     setSignups(null);
+    setInquiries(null);
     setPasswordInput('');
   };
 
-  const handleDelete = async (id: string, email: string) => {
+  const handleDeleteSignup = async (id: string, email: string) => {
     if (!secret) return;
     if (!window.confirm(`Remove ${email} from the waitlist? This can't be undone.`)) return;
 
@@ -103,6 +120,25 @@ export default function AdminPage() {
       });
       if (!res.ok) throw new Error('Failed to delete signup.');
       setSignups((prev) => (prev ? prev.filter((s) => s._id !== id) : prev));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Something went wrong.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleDeleteInquiry = async (id: string, name: string) => {
+    if (!secret) return;
+    if (!window.confirm(`Remove the inquiry from ${name}? This can't be undone.`)) return;
+
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/admin/partner-inquiries/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${secret}` },
+      });
+      if (!res.ok) throw new Error('Failed to delete inquiry.');
+      setInquiries((prev) => (prev ? prev.filter((i) => i._id !== id) : prev));
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
@@ -152,8 +188,7 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-display text-2xl font-bold text-zneako-black">Waitlist</p>
-            <p className="text-sm text-black/55">Zneako Admin</p>
+            <p className="font-display text-2xl font-bold text-zneako-black">Zneako Admin</p>
           </div>
           <button
             onClick={handleLogout}
@@ -163,11 +198,30 @@ export default function AdminPage() {
           </button>
         </div>
 
+        <div className="mt-6 flex gap-2">
+          <button
+            onClick={() => setTab('waitlist')}
+            className={`rounded-full px-4 py-1.5 text-xs uppercase tracking-wide transition-colors ${
+              tab === 'waitlist' ? 'bg-zneako-black text-white' : 'bg-white text-black/50 border border-black/10'
+            }`}
+          >
+            Waitlist{signups ? ` (${signups.length})` : ''}
+          </button>
+          <button
+            onClick={() => setTab('partners')}
+            className={`rounded-full px-4 py-1.5 text-xs uppercase tracking-wide transition-colors ${
+              tab === 'partners' ? 'bg-zneako-black text-white' : 'bg-white text-black/50 border border-black/10'
+            }`}
+          >
+            Partner Inquiries{inquiries ? ` (${inquiries.length})` : ''}
+          </button>
+        </div>
+
         {loadError && <p className="mt-4 text-sm text-red-600">{loadError}</p>}
 
-        {signups && (
+        {tab === 'waitlist' && signups && (
           <>
-            <div className="mt-8 grid grid-cols-3 gap-4">
+            <div className="mt-6 grid grid-cols-3 gap-4">
               <div className="rounded-lg border border-black/10 bg-white p-5">
                 <p className="font-display text-3xl font-bold text-zneako-black">{signups.length}</p>
                 <p className="mt-1 text-xs uppercase tracking-wide text-black/50">Total signups</p>
@@ -224,7 +278,7 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button
-                          onClick={() => handleDelete(s._id, s.email)}
+                          onClick={() => handleDeleteSignup(s._id, s.email)}
                           disabled={deletingId === s._id}
                           className="text-xs uppercase tracking-wide text-red-600 hover:text-red-800 disabled:opacity-40"
                         >
@@ -244,6 +298,50 @@ export default function AdminPage() {
               </table>
             </div>
           </>
+        )}
+
+        {tab === 'partners' && inquiries && (
+          <div className="mt-8 overflow-x-auto rounded-lg border border-black/10 bg-white">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-black/45">
+                  <th className="px-4 py-3 font-medium">Name</th>
+                  <th className="px-4 py-3 font-medium">Email</th>
+                  <th className="px-4 py-3 font-medium">Company / Fund</th>
+                  <th className="px-4 py-3 font-medium">Message</th>
+                  <th className="px-4 py-3 font-medium">Received</th>
+                  <th className="px-4 py-3 font-medium"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {inquiries.map((inq) => (
+                  <tr key={inq._id} className="border-b border-black/5 last:border-0 align-top">
+                    <td className="px-4 py-3 text-zneako-black whitespace-nowrap">{inq.name}</td>
+                    <td className="px-4 py-3 text-black/65 whitespace-nowrap">{inq.email}</td>
+                    <td className="px-4 py-3 text-black/65 whitespace-nowrap">{inq.organization || '—'}</td>
+                    <td className="px-4 py-3 text-black/65 max-w-sm">{inq.message}</td>
+                    <td className="px-4 py-3 text-black/65 whitespace-nowrap">{formatDate(inq._createdAt)}</td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      <button
+                        onClick={() => handleDeleteInquiry(inq._id, inq.name)}
+                        disabled={deletingId === inq._id}
+                        className="text-xs uppercase tracking-wide text-red-600 hover:text-red-800 disabled:opacity-40"
+                      >
+                        {deletingId === inq._id ? 'Removing…' : 'Remove'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {inquiries.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-black/40">
+                      No partner inquiries yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </main>
