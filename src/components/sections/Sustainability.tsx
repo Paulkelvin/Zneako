@@ -15,7 +15,7 @@ const SDGS = [
   {
     number: 9,
     title: 'Industry, Innovation & Infrastructure',
-    description: "Developed with the University of Bradford's Polymer Institute — genuine innovation, not a claim.",
+    description: "Developed with the University of Bradford's Polymer Institute: genuine innovation, not a claim.",
   },
   {
     number: 11,
@@ -30,7 +30,7 @@ const SDGS = [
 ];
 
 const CERTIFICATIONS = [
-  { name: 'GRS', description: 'Global Recycled Standard — chain-of-custody for recycled tyre-rubber content.' },
+  { name: 'GRS', description: 'Global Recycled Standard: chain-of-custody for recycled tyre-rubber content.' },
   { name: 'SEDEX & SMETA', description: 'Supplier due diligence and ethical/environmental audits.' },
   { name: 'UK REACH', description: 'Product testing and compliance review ahead of launch.' },
   { name: 'ISO 14001', description: 'Environmental management principles across sourcing and production.' },

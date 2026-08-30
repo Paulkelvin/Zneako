@@ -99,7 +99,7 @@ export default function Waitlist() {
             FIRST 50.
           </h2>
           <p className="mt-4 font-body text-sm text-black/65 leading-relaxed md:hidden">
-            First 50 pairs, completely free — just join the waitlist.
+            First 50 pairs, completely free. Just join the waitlist.
           </p>
           <p className="mt-4 font-body text-sm text-black/65 leading-relaxed hidden md:block">
             We&apos;re giving away our first 50 pairs, completely free, to the families who join
@@ -191,10 +191,10 @@ export default function Waitlist() {
                 {totalSignups <= 35 ? (
                   <>
                     <p className="mt-1 font-body text-sm text-black/60 leading-relaxed md:hidden">
-                      You&apos;re #{totalSignups} — your pair is guaranteed.
+                      You&apos;re #{totalSignups}. Your pair is guaranteed.
                     </p>
                     <p className="mt-1 font-body text-sm text-black/60 leading-relaxed hidden md:block">
-                      You&apos;re number {totalSignups} of the first 35 — your pair is guaranteed.
+                      You&apos;re number {totalSignups} of the first 35. Your pair is guaranteed.
                       We&apos;ll be in touch.
                     </p>
                   </>
@@ -205,7 +205,7 @@ export default function Waitlist() {
                     </p>
                     <p className="mt-1 font-body text-sm text-black/60 leading-relaxed hidden md:block">
                       The first 35 guaranteed spots are filled. You&apos;re now in the running for
-                      one of the next 15 — share your link to boost your chances.
+                      one of the next 15. Share your link to boost your chances.
                     </p>
                   </>
                 )}

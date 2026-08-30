@@ -7,8 +7,8 @@ export function waitlistConfirmationEmail(params: {
   const referralUrl = `${params.origin}/?ref=${params.referralCode}`;
   const statusCopy =
     params.totalSignups <= 35
-      ? `You&rsquo;re number ${params.totalSignups} of the first 35 &mdash; your pair is guaranteed. Share your link below to help us reach more families.`
-      : `The first 35 guaranteed spots are filled. You&rsquo;re now in the running for one of the next 15 &mdash; share your link below to boost your chances.`;
+      ? `You&rsquo;re number ${params.totalSignups} of the first 35. Your pair is guaranteed. Share your link below to help us reach more families.`
+      : `The first 35 guaranteed spots are filled. You&rsquo;re now in the running for one of the next 15. Share your link below to boost your chances.`;
 
   const html = `
   <div style="background:#0e0d0c;padding:40px 24px;font-family:Helvetica,Arial,sans-serif;">
@@ -23,15 +23,15 @@ export function waitlistConfirmationEmail(params: {
         <a href="${referralUrl}" style="font-size:14px;color:#d4af37;text-decoration:none;word-break:break-all;">${referralLink}</a>
       </div>
       <p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:rgba(245,241,232,0.35);">
-        Save this email &mdash; it&rsquo;s the only place your referral link lives if you close the tab.
+        Save this email. It&rsquo;s the only place your referral link lives if you close the tab.
       </p>
     </div>
   </div>`;
 
   const textStatusCopy =
     params.totalSignups <= 35
-      ? `You're number ${params.totalSignups} of the first 35 — your pair is guaranteed. Share your link below to help us reach more families.`
-      : `The first 35 guaranteed spots are filled. You're now in the running for one of the next 15 — share your link below to boost your chances.`;
+      ? `You're number ${params.totalSignups} of the first 35. Your pair is guaranteed. Share your link below to help us reach more families.`
+      : `The first 35 guaranteed spots are filled. You're now in the running for one of the next 15. Share your link below to boost your chances.`;
 
   const text = `You're on the Zneako waitlist.
 
@@ -39,7 +39,7 @@ ${textStatusCopy}
 
 Your referral link: ${referralUrl}
 
-Save this email — it's the only place your referral link lives if you close the tab.`;
+Save this email. It's the only place your referral link lives if you close the tab.`;
 
   return { subject: "You're on the Zneako waitlist", html, text };
 }
