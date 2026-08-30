@@ -10,7 +10,7 @@ export default defineType({
   fields: [
     defineField({ name: 'name', title: 'Name', type: 'string', readOnly: true }),
     defineField({ name: 'email', title: 'Email', type: 'string', readOnly: true }),
-    defineField({ name: 'organization', title: 'Company / Fund', type: 'string', readOnly: true }),
+    defineField({ name: 'organization', title: 'Company / Organization', type: 'string', readOnly: true }),
     defineField({ name: 'message', title: 'Message', type: 'text', readOnly: true }),
   ],
   preview: {

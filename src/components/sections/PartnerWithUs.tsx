@@ -106,7 +106,7 @@ export default function PartnerWithUs() {
                   htmlFor="partner-org"
                   className="block font-body text-xs tracking-[0.1em] uppercase text-white/50 mb-2"
                 >
-                  Company / Fund
+                  Company / Organization
                 </label>
                 <Input
                   id="partner-org"

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Signup {
   _id: string;
@@ -127,25 +128,6 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteInquiry = async (id: string, name: string) => {
-    if (!secret) return;
-    if (!window.confirm(`Remove the inquiry from ${name}? This can't be undone.`)) return;
-
-    setDeletingId(id);
-    try {
-      const res = await fetch(`/api/admin/partner-inquiries/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${secret}` },
-      });
-      if (!res.ok) throw new Error('Failed to delete inquiry.');
-      setInquiries((prev) => (prev ? prev.filter((i) => i._id !== id) : prev));
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Something went wrong.');
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
   if (!secret) {
     return (
       <main className="min-h-screen flex items-center justify-center px-6">
@@ -153,7 +135,14 @@ export default function AdminPage() {
           onSubmit={handleLogin}
           className="w-full max-w-sm rounded-lg border border-black/10 bg-white p-8"
         >
-          <p className="font-display text-xl font-bold text-zneako-black">Zneako Admin</p>
+          <Image
+            src="/brand/zneako-logo-lockup.png"
+            alt="Zneako"
+            width={719}
+            height={163}
+            className="h-8 w-auto"
+          />
+          <p className="mt-4 font-display text-xl font-bold text-zneako-black">Admin</p>
           <p className="mt-1 text-sm text-black/55">Enter the admin password to continue.</p>
 
           <input
@@ -163,7 +152,7 @@ export default function AdminPage() {
             placeholder="Password"
             value={passwordInput}
             onChange={(e) => setPasswordInput(e.target.value)}
-            className="mt-6 w-full rounded-md border border-black/15 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zneako-orange"
+            className="mt-6 w-full rounded-md border border-black/15 px-3 py-2 text-base md:text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zneako-orange"
           />
 
           <button
@@ -187,9 +176,13 @@ export default function AdminPage() {
     <main className="min-h-screen px-6 py-10 md:px-12">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="font-display text-2xl font-bold text-zneako-black">Zneako Admin</p>
-          </div>
+          <Image
+            src="/brand/zneako-logo-lockup.png"
+            alt="Zneako"
+            width={719}
+            height={163}
+            className="h-8 w-auto"
+          />
           <button
             onClick={handleLogout}
             className="text-xs uppercase tracking-wide text-black/50 hover:text-zneako-black"
@@ -307,10 +300,9 @@ export default function AdminPage() {
                 <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-black/45">
                   <th className="px-4 py-3 font-medium">Name</th>
                   <th className="px-4 py-3 font-medium">Email</th>
-                  <th className="px-4 py-3 font-medium">Company / Fund</th>
+                  <th className="px-4 py-3 font-medium">Company / Organization</th>
                   <th className="px-4 py-3 font-medium">Message</th>
                   <th className="px-4 py-3 font-medium">Received</th>
-                  <th className="px-4 py-3 font-medium"></th>
                 </tr>
               </thead>
               <tbody>
@@ -321,20 +313,11 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-black/65 whitespace-nowrap">{inq.organization || '—'}</td>
                     <td className="px-4 py-3 text-black/65 max-w-sm">{inq.message}</td>
                     <td className="px-4 py-3 text-black/65 whitespace-nowrap">{formatDate(inq._createdAt)}</td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      <button
-                        onClick={() => handleDeleteInquiry(inq._id, inq.name)}
-                        disabled={deletingId === inq._id}
-                        className="text-xs uppercase tracking-wide text-red-600 hover:text-red-800 disabled:opacity-40"
-                      >
-                        {deletingId === inq._id ? 'Removing…' : 'Remove'}
-                      </button>
-                    </td>
                   </tr>
                 ))}
                 {inquiries.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-black/40">
+                    <td colSpan={5} className="px-4 py-8 text-center text-black/40">
                       No partner inquiries yet.
                     </td>
                   </tr>
