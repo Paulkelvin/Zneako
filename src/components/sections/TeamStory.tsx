@@ -24,6 +24,7 @@ const TEAM: TeamMember[] = [
     name: 'Professor Klaus Pors',
     role: 'Academic Co-Founder, Institute of Cancer Therapeutics',
     bio: 'Provides strategic oversight, ensuring alignment with research, innovation and commercialisation priorities.',
+    photo: '/team/klaus-pors.jpg',
   },
   { name: 'Bonnie Clyde', role: 'Innovation Officer' },
 ];
