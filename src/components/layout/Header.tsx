@@ -44,7 +44,7 @@ export default function Header() {
             width={719}
             height={163}
             priority
-            className="h-8 md:h-9 w-auto"
+            className="h-6 md:h-9 w-auto"
           />
         </a>
 
@@ -70,7 +70,7 @@ export default function Header() {
             <button
               type="button"
               aria-label="Open menu"
-              className={`md:hidden inline-flex items-center justify-center w-10 h-10 -mr-2 transition-colors duration-500 ${
+              className={`md:hidden inline-flex items-center justify-center w-10 h-10 -mr-2 transition-colors duration-500 focus:outline-none focus-visible:outline-none ${
                 scrolled ? 'text-white' : 'text-zneako-black'
               }`}
             >

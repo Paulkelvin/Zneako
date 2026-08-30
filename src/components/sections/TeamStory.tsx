@@ -110,9 +110,6 @@ export default function TeamStory() {
                 {member.name}
               </p>
               <p className="mt-1 font-body text-xs text-black/55">{member.role}</p>
-              {member.bio && (
-                <p className="mt-2 font-body text-xs text-black/45 leading-relaxed">{member.bio}</p>
-              )}
             </div>
           ))}
         </div>
