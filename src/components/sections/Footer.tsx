@@ -23,18 +23,18 @@ export default function Footer() {
             Contact
           </p>
           <a
-            href="mailto:hello@zneako.com"
+            href="mailto:Oluwabusayo.idowu@zneako.com"
             className="inline-flex items-center gap-2 font-body text-sm text-zneako-sand hover:text-zneako-orange transition-colors"
           >
             <Mail className="w-4 h-4" strokeWidth={1.75} />
-            hello@zneako.com
+            Oluwabusayo.idowu@zneako.com
           </a>
           <a
-            href="tel:+440000000000"
+            href="tel:+447310014497"
             className="inline-flex items-center gap-2 font-body text-sm text-zneako-sand hover:text-zneako-orange transition-colors"
           >
             <Phone className="w-4 h-4" strokeWidth={1.75} />
-            +44 (0) 000 000 0000
+            +44 7310 014497
           </a>
           <p className="inline-flex items-center gap-2 font-body text-sm text-zneako-sand">
             <MapPin className="w-4 h-4 shrink-0" strokeWidth={1.75} />
