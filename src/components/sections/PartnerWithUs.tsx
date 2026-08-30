@@ -94,7 +94,7 @@ export default function PartnerWithUs() {
                   id="partner-email"
                   type="email"
                   required
-                  placeholder="you@fund.com"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="border-white/15 text-white placeholder:text-white/30 focus-visible:ring-zneako-orange"

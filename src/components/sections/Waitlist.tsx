@@ -195,7 +195,7 @@ export default function Waitlist() {
                     </p>
                     <p className="mt-1 font-body text-sm text-black/60 leading-relaxed hidden md:block">
                       You&apos;re number {totalSignups} of the first 35 — your pair is guaranteed.
-                      Share your link to help us reach more families.
+                      We&apos;ll be in touch.
                     </p>
                   </>
                 ) : (
@@ -211,23 +211,27 @@ export default function Waitlist() {
                 )}
               </div>
 
-              <div className="rounded-lg border border-black/10 bg-zneako-cream px-4 py-3">
-                <p className="font-body text-xs tracking-[0.1em] uppercase text-black/45">
-                  Your referral link
-                </p>
-                <p className="mt-1 font-body text-sm text-zneako-orange-deep truncate">
-                  {origin.replace(/^https?:\/\//, '')}/?ref={referralCode}
-                </p>
-              </div>
+              {totalSignups > 35 && (
+                <>
+                  <div className="rounded-lg border border-black/10 bg-zneako-cream px-4 py-3">
+                    <p className="font-body text-xs tracking-[0.1em] uppercase text-black/45">
+                      Your referral link
+                    </p>
+                    <p className="mt-1 font-body text-sm text-zneako-orange-deep truncate">
+                      {origin.replace(/^https?:\/\//, '')}/?ref={referralCode}
+                    </p>
+                  </div>
 
-              <div className="flex items-baseline gap-2">
-                <p className="font-display text-2xl font-bold text-zneako-orange">
-                  {referralCount}
-                </p>
-                <p className="font-body text-xs tracking-[0.1em] uppercase text-black/45">
-                  {referralCount === 1 ? 'family referred' : 'families referred'}
-                </p>
-              </div>
+                  <div className="flex items-baseline gap-2">
+                    <p className="font-display text-2xl font-bold text-zneako-orange">
+                      {referralCount}
+                    </p>
+                    <p className="font-body text-xs tracking-[0.1em] uppercase text-black/45">
+                      {referralCount === 1 ? 'family referred' : 'families referred'}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
