@@ -1,6 +1,7 @@
-import { ArrowDown, Check, Circle, ImageIcon } from 'lucide-react';
+import { Check, Circle } from 'lucide-react';
 import TagPill from '@/components/shared/TagPill';
 import BloomShape from '@/components/shared/BloomShape';
+import TransformationShowcase from './TransformationShowcase';
 
 function Connector() {
   return (
@@ -24,44 +25,6 @@ const PILLARS = [
     description: 'Built to leave a lighter footprint.',
   },
 ];
-
-function TransformationPlaceholder() {
-  return (
-    <div>
-      <TagPill label="The Transformation" />
-      <div className="mt-4 rounded-lg border border-black/10 bg-zneako-cream overflow-hidden">
-        <div className="relative flex flex-col aspect-[4/5]">
-          <div className="flex-1 flex flex-col items-center justify-center gap-3 border-b border-black/10 p-6 text-center">
-            <ImageIcon className="w-6 h-6 text-black/25" strokeWidth={1.5} />
-            <div>
-              <p className="font-body text-xs tracking-[0.15em] uppercase text-black/40">
-                Before
-              </p>
-              <p className="mt-1 font-body text-xs text-black/35">Reclaimed tyre rubber</p>
-            </div>
-          </div>
-
-          <div className="flex-1 flex flex-col items-center justify-center gap-3 p-6 text-center">
-            <ImageIcon className="w-6 h-6 text-zneako-green" strokeWidth={1.5} />
-            <div>
-              <p className="font-body text-xs tracking-[0.15em] uppercase text-zneako-green-deep">
-                After
-              </p>
-              <p className="mt-1 font-body text-xs text-black/40">Finished Zneako sole</p>
-            </div>
-          </div>
-
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-zneako-black border border-zneako-orange/50 flex items-center justify-center">
-            <ArrowDown className="w-4 h-4 text-zneako-orange" strokeWidth={2} />
-          </div>
-        </div>
-      </div>
-      <p className="mt-3 font-body text-xs text-black/35 italic">
-        Prototype photography coming soon.
-      </p>
-    </div>
-  );
-}
 
 export default function ProblemSolution() {
   return (
@@ -126,7 +89,7 @@ export default function ProblemSolution() {
         </div>
 
         <div className="w-full md:w-80 lg:w-96 shrink-0 md:sticky md:top-28">
-          <TransformationPlaceholder />
+          <TransformationShowcase />
         </div>
       </div>
 
