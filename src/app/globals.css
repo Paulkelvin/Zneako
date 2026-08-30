@@ -36,7 +36,6 @@ html {
 body {
   background: var(--color-white);
   color: var(--color-black);
-  overflow-x: hidden;
 }
 
 ::selection {
