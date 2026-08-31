@@ -30,7 +30,7 @@ const TEAM: TeamMember[] = [
     role: 'Academic Co-Founder, Institute of Cancer Therapeutics',
     bio: 'Provides strategic oversight, ensuring alignment with research, innovation and commercialisation priorities.',
     photo: '/team/klaus-pors.png',
-    photoClassName: 'scale-110 object-top',
+    photoClassName: 'scale-100 object-center',
   },
   {
     name: 'Bonnie Clyde',
@@ -110,7 +110,7 @@ export default function TeamStory() {
                   alt={featured.name}
                   fill
                   sizes="256px"
-                  className={`object-cover ${featured.photoClassName ?? 'scale-110 object-top'}`}
+                  className={`object-cover ${featured.photoClassName ?? 'scale-110 origin-top'}`}
                 />
               )}
             </div>
