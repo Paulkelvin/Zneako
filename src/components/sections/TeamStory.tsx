@@ -50,6 +50,9 @@ function initials(name: string): string {
 }
 
 export default function TeamStory() {
+  const featured = TEAM.find((member) => member.shape === 'rectangle');
+  const rest = TEAM.filter((member) => member.shape !== 'rectangle');
+
   return (
     <section className="relative bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
       <div className="max-w-2xl mx-auto text-center">
@@ -98,39 +101,52 @@ export default function TeamStory() {
       </div>
 
       <div className="mt-16 md:mt-20 max-w-5xl mx-auto border-t border-black/10 pt-16 md:pt-20">
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-6 px-6 scroll-pl-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-10 md:overflow-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {TEAM.map((member) => (
-            <div key={member.name} className="shrink-0 w-64 snap-start md:w-auto text-center">
-              <div
-                className={
-                  member.shape === 'rectangle'
-                    ? 'relative aspect-[4/5] rounded-lg overflow-hidden flex items-center justify-center bg-zneako-cream'
-                    : 'relative w-40 h-40 md:w-48 md:h-48 mx-auto rounded-full overflow-hidden flex items-center justify-center bg-zneako-cream ring-1 ring-black/5'
-                }
-              >
+        {featured && (
+          <div className="flex flex-col items-center text-center mb-16 md:mb-20">
+            <div className="relative w-48 sm:w-56 md:w-64 aspect-[4/5] rounded-lg overflow-hidden bg-zneako-cream">
+              {featured.photo && (
+                <Image
+                  src={featured.photo}
+                  alt={featured.name}
+                  fill
+                  sizes="256px"
+                  className={`object-cover ${featured.photoClassName ?? 'scale-110 object-top'}`}
+                />
+              )}
+            </div>
+            <p className="mt-5 font-display text-lg md:text-xl font-semibold text-zneako-black">
+              {featured.name}
+            </p>
+            <p className="mt-1 font-body text-sm text-black/55">{featured.role}</p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-3 gap-4 sm:gap-8 md:gap-14 max-w-3xl mx-auto">
+          {rest.map((member) => (
+            <div key={member.name} className="text-center">
+              <div className="relative w-20 h-20 sm:w-32 sm:h-32 md:w-48 md:h-48 mx-auto rounded-full overflow-hidden flex items-center justify-center bg-zneako-cream ring-1 ring-black/5">
                 {member.photo ? (
                   <div className="relative w-full h-full">
                     <Image
                       src={member.photo}
                       alt={member.name}
                       fill
-                      sizes={member.shape === 'rectangle' ? '(min-width: 768px) 25vw, 60vw' : '192px'}
-                      className={`object-cover ${
-                        member.photoClassName ??
-                        (member.shape === 'rectangle' ? 'scale-110 object-top' : 'object-top')
-                      }`}
+                      sizes="192px"
+                      className={`object-cover ${member.photoClassName ?? 'object-top'}`}
                     />
                   </div>
                 ) : (
-                  <span className="font-display text-2xl font-bold text-zneako-orange">
+                  <span className="font-display text-lg md:text-2xl font-bold text-zneako-orange">
                     {initials(member.name)}
                   </span>
                 )}
               </div>
-              <p className="mt-4 font-display text-base font-semibold text-zneako-black">
+              <p className="mt-3 md:mt-4 font-display text-xs sm:text-sm md:text-base font-semibold text-zneako-black">
                 {member.name}
               </p>
-              <p className="mt-1 font-body text-xs text-black/55">{member.role}</p>
+              <p className="mt-1 font-body text-[10px] sm:text-[11px] md:text-xs text-black/55">
+                {member.role}
+              </p>
             </div>
           ))}
         </div>
