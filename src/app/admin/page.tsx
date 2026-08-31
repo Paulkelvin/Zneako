@@ -59,6 +59,8 @@ export default function AdminPage() {
   const [inquiries, setInquiries] = useState<PartnerInquiry[] | null>(null);
   const [loadError, setLoadError] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selecting, setSelecting] = useState(false);
+  const [selectMessage, setSelectMessage] = useState('');
 
   useEffect(() => {
     const stored = sessionStorage.getItem(STORAGE_KEY);
@@ -136,6 +138,37 @@ export default function AdminPage() {
       alert(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleRunSelection = async () => {
+    if (!secret || selecting) return;
+    if (
+      !window.confirm(
+        `Assign Early Tier to the first ${EARLY_SLOTS} signups and Referral Tier to the top ${REFERRAL_SLOTS} referrers among the rest? Safe to re-run any time as more people sign up.`
+      )
+    ) {
+      return;
+    }
+
+    setSelecting(true);
+    setSelectMessage('');
+    try {
+      const res = await fetch('/api/admin/select-winners', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${secret}` },
+      });
+      if (!res.ok) throw new Error('Failed to run selection.');
+      const data: { earlySelected: number; referralSelected: number } = await res.json();
+      const refreshed = await fetchWithAuth<Signup[]>('/api/admin/waitlist', secret, 'signups');
+      setSignups(refreshed);
+      setSelectMessage(
+        `Done: ${data.earlySelected} early tier, ${data.referralSelected} referral tier.`
+      );
+    } catch (err) {
+      setSelectMessage(err instanceof Error ? err.message : 'Something went wrong.');
+    } finally {
+      setSelecting(false);
     }
   };
 
@@ -243,6 +276,22 @@ export default function AdminPage() {
                 <p className="mt-1 text-[10px] sm:text-xs uppercase tracking-wide text-black/50">Referral tier</p>
               </div>
             </div>
+
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              <button
+                onClick={handleRunSelection}
+                disabled={selecting}
+                className="self-start rounded-full bg-zneako-black px-4 py-2 text-xs uppercase tracking-wide text-white transition-colors hover:bg-zneako-orange hover:text-zneako-black disabled:opacity-40"
+              >
+                {selecting ? 'Running…' : 'Run Tier Selection'}
+              </button>
+              {selectMessage && <p className="text-xs text-black/55">{selectMessage}</p>}
+            </div>
+            <p className="mt-2 text-[11px] text-black/40 leading-relaxed">
+              Early/Referral tier only update when you run this. It&apos;s the first {EARLY_SLOTS} signups for
+              Early Tier, and the top {REFERRAL_SLOTS} referrers among everyone else for Referral Tier. Safe
+              to re-run any time.
+            </p>
 
             {/* Table on sm+; a stacked card list on mobile instead of a
                 horizontally-scrolling table whose extra columns would be
