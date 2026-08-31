@@ -29,6 +29,35 @@ const STORAGE_KEY = 'zneako_admin_secret';
 const EARLY_SLOTS = 35;
 const REFERRAL_SLOTS = 15;
 
+// Sessions already don't survive closing the tab (sessionStorage), but with
+// no expiry a tab left open indefinitely would stay logged in forever. Caps
+// a session at 8 hours from login, whether or not the tab stays open.
+const SESSION_DURATION_MS = 8 * 60 * 60 * 1000;
+
+interface StoredSession {
+  secret: string;
+  expiresAt: number;
+}
+
+function readStoredSession(): StoredSession | null {
+  const raw = sessionStorage.getItem(STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as StoredSession;
+    if (typeof parsed.secret !== 'string' || typeof parsed.expiresAt !== 'number') return null;
+    if (Date.now() >= parsed.expiresAt) return null;
+    return parsed;
+  } catch {
+    // Legacy plain-string value from before session expiry existed.
+    return null;
+  }
+}
+
+function writeStoredSession(secret: string): void {
+  const session: StoredSession = { secret, expiresAt: Date.now() + SESSION_DURATION_MS };
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -63,9 +92,34 @@ export default function AdminPage() {
   const [selectMessage, setSelectMessage] = useState('');
 
   useEffect(() => {
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (stored) setSecret(stored);
+    const stored = readStoredSession();
+    if (stored) {
+      setSecret(stored.secret);
+    } else if (sessionStorage.getItem(STORAGE_KEY)) {
+      // A key was present but expired (or was a stale pre-expiry value) -
+      // clear it and explain why, rather than silently landing on a blank
+      // login form.
+      sessionStorage.removeItem(STORAGE_KEY);
+      setAuthError('Your session expired. Please log in again.');
+    }
   }, []);
+
+  // Catches a tab left open past the 8-hour session limit: without this,
+  // the expiry is only checked on mount, so an already-open tab would stay
+  // logged in indefinitely regardless of the stored expiry time.
+  useEffect(() => {
+    if (!secret) return;
+    const interval = setInterval(() => {
+      if (!readStoredSession()) {
+        sessionStorage.removeItem(STORAGE_KEY);
+        setSecret(null);
+        setSignups(null);
+        setInquiries(null);
+        setAuthError('Your session expired. Please log in again.');
+      }
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [secret]);
 
   useEffect(() => {
     if (!secret) return;
@@ -86,7 +140,7 @@ export default function AdminPage() {
           // visible there instead of silently clearing to a blank form.
           sessionStorage.removeItem(STORAGE_KEY);
           setSecret(null);
-          setAuthError('Your saved password no longer works — please log in again.');
+          setAuthError('Your saved password no longer works. Please log in again.');
         } else {
           setLoadError(err.message);
         }
@@ -100,7 +154,7 @@ export default function AdminPage() {
     setAuthError('');
     try {
       await fetchWithAuth<Signup[]>('/api/admin/waitlist', passwordInput, 'signups');
-      sessionStorage.setItem(STORAGE_KEY, passwordInput);
+      writeStoredSession(passwordInput);
       setSecret(passwordInput);
       // On mobile, focusing the password field can scroll the page (the
       // keyboard pushes the viewport up); that scroll position otherwise
