@@ -7,6 +7,7 @@ interface TeamMember {
   bio?: string;
   photo?: string;
   photoClassName?: string;
+  shape?: 'circle' | 'rectangle';
 }
 
 const TEAM: TeamMember[] = [
@@ -15,7 +16,7 @@ const TEAM: TeamMember[] = [
     role: 'Co-Founder & Commercial Lead',
     bio: 'Leads product translation, market validation and commercial development, making sure the science becomes something families actually want.',
     photo: '/team/oluwabusayo-idowu.png',
-    photoClassName: 'scale-125 object-top',
+    shape: 'rectangle',
   },
   {
     name: 'Dr Rob Innie',
@@ -100,15 +101,24 @@ export default function TeamStory() {
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-6 px-6 scroll-pl-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-10 md:overflow-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {TEAM.map((member) => (
             <div key={member.name} className="shrink-0 w-64 snap-start md:w-auto text-center">
-              <div className="relative w-36 h-36 md:w-40 md:h-40 mx-auto rounded-full overflow-hidden flex items-center justify-center bg-zneako-cream ring-1 ring-black/5">
+              <div
+                className={
+                  member.shape === 'rectangle'
+                    ? 'relative aspect-[4/5] rounded-lg overflow-hidden flex items-center justify-center bg-zneako-cream'
+                    : 'relative w-40 h-40 md:w-48 md:h-48 mx-auto rounded-full overflow-hidden flex items-center justify-center bg-zneako-cream ring-1 ring-black/5'
+                }
+              >
                 {member.photo ? (
                   <div className="relative w-full h-full">
                     <Image
                       src={member.photo}
                       alt={member.name}
                       fill
-                      sizes="160px"
-                      className={`object-cover ${member.photoClassName ?? 'scale-110 object-top'}`}
+                      sizes={member.shape === 'rectangle' ? '(min-width: 768px) 25vw, 60vw' : '192px'}
+                      className={`object-cover ${
+                        member.photoClassName ??
+                        (member.shape === 'rectangle' ? 'scale-110 object-top' : 'object-top')
+                      }`}
                     />
                   </div>
                 ) : (
