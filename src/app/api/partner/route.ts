@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 
-  const destination = process.env.PARTNER_INQUIRY_EMAIL;
+  const destination = process.env.ADMIN_NOTIFICATION_EMAIL;
   if (resend && destination) {
     const { subject, html, text } = partnerInquiryEmail({ name, email, organization, message });
     try {
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       });
     } catch (err) {
       // Non-fatal: the inquiry is already saved and visible in /admin even if the
-      // notification email fails or PARTNER_INQUIRY_EMAIL isn't set yet.
+      // notification email fails or ADMIN_NOTIFICATION_EMAIL isn't set yet.
       console.error('Failed to send partner inquiry email', err);
     }
   }

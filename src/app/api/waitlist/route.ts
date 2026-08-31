@@ -3,6 +3,7 @@ import { randomBytes, createHash } from 'crypto';
 import { sanityServerClient } from '@/lib/sanityServer';
 import { resend, WAITLIST_FROM_EMAIL } from '@/lib/resend';
 import { waitlistConfirmationEmail } from '@/lib/waitlistEmail';
+import { waitlistSignupNotificationEmail } from '@/lib/waitlistNotificationEmail';
 import { getClientIp, isRateLimited } from '@/lib/rateLimit';
 
 const AGE_RANGES = ['2-4', '5-7', '8-10', '11-13'];
@@ -141,6 +142,24 @@ export async function POST(req: NextRequest) {
         await resend.emails.send({ from: WAITLIST_FROM_EMAIL, to: email, subject, html, text });
       } catch (err) {
         console.error('Failed to send waitlist confirmation email', err);
+      }
+
+      const notifyDestination = process.env.ADMIN_NOTIFICATION_EMAIL;
+      if (notifyDestination) {
+        const notification = waitlistSignupNotificationEmail({ email, ageRange, totalSignups });
+        try {
+          await resend.emails.send({
+            from: WAITLIST_FROM_EMAIL,
+            to: notifyDestination,
+            subject: notification.subject,
+            html: notification.html,
+            text: notification.text,
+          });
+        } catch (err) {
+          // Non-fatal: the signup already succeeded and is visible in /admin
+          // even if this notification fails or ADMIN_NOTIFICATION_EMAIL isn't set.
+          console.error('Failed to send waitlist admin notification email', err);
+        }
       }
     }
 
