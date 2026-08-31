@@ -54,7 +54,7 @@ function Stage({ stage, index }: { stage: (typeof STAGES)[number]; index: number
       <div className="md:mt-4">
         {stage.current && (
           <span className="inline-block mb-1.5 rounded-full bg-zneako-orange/15 px-2.5 py-0.5 font-body text-[10px] tracking-[0.1em] uppercase text-zneako-orange-deep">
-            You are here
+            We are here
           </span>
         )}
         <p className="font-display text-sm font-semibold text-zneako-black">{stage.label}</p>

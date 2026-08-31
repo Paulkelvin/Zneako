@@ -45,9 +45,9 @@ export default function PartnerWithUs() {
   return (
     <section
       id="partner"
-      className="relative bg-zneako-black py-24 md:py-32 px-6 md:px-16 lg:px-24"
+      className="relative bg-zneako-charcoal py-24 md:py-32 px-6 md:px-16 lg:px-24"
     >
-      <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden border border-white/10 bg-zneako-black flex flex-col md:flex-row">
+      <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden border border-white/10 bg-zneako-charcoal flex flex-col md:flex-row">
         <div className="flex-1 p-8 md:p-12">
           <span className="font-body text-xs tracking-[0.2em] uppercase text-zneako-orange">
             Investors
