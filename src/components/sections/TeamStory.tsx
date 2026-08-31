@@ -15,20 +15,28 @@ const TEAM: TeamMember[] = [
     role: 'Co-Founder & Commercial Lead',
     bio: 'Leads product translation, market validation and commercial development, making sure the science becomes something families actually want.',
     photo: '/team/oluwabusayo-idowu.png',
+    photoClassName: 'scale-125 object-top',
   },
   {
     name: 'Dr Rob Innie',
     role: 'CTO, Polymer Institute, University of Bradford',
     bio: 'Leads the technical work on rubber compounding, processing and prototype development.',
+    photo: '/team/rob-innie.png',
+    photoClassName: 'scale-100 object-center',
   },
   {
     name: 'Professor Klaus Pors',
     role: 'Academic Co-Founder, Institute of Cancer Therapeutics',
     bio: 'Provides strategic oversight, ensuring alignment with research, innovation and commercialisation priorities.',
     photo: '/team/klaus-pors.png',
-    photoClassName: 'scale-100 origin-top',
+    photoClassName: 'scale-110 object-top',
   },
-  { name: 'Bonnie Clyde', role: 'Innovation Officer' },
+  {
+    name: 'Bonnie Clyde',
+    role: 'Innovation Officer',
+    photo: '/team/bonnie-clyde.png',
+    photoClassName: 'scale-100 object-center',
+  },
 ];
 
 const TITLES = new Set(['dr', 'prof', 'professor', 'mr', 'mrs', 'ms']);
@@ -92,15 +100,15 @@ export default function TeamStory() {
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-6 px-6 scroll-pl-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:gap-10 md:overflow-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {TEAM.map((member) => (
             <div key={member.name} className="shrink-0 w-64 snap-start md:w-auto text-center">
-              <div className="relative aspect-[4/5] rounded-lg overflow-hidden flex items-center justify-center bg-zneako-cream">
+              <div className="relative w-36 h-36 md:w-40 md:h-40 mx-auto rounded-full overflow-hidden flex items-center justify-center bg-zneako-cream ring-1 ring-black/5">
                 {member.photo ? (
                   <div className="relative w-full h-full">
                     <Image
                       src={member.photo}
                       alt={member.name}
                       fill
-                      sizes="(min-width: 768px) 25vw, 60vw"
-                      className={`object-cover object-top ${member.photoClassName ?? 'scale-110 origin-top'}`}
+                      sizes="160px"
+                      className={`object-cover ${member.photoClassName ?? 'scale-110 object-top'}`}
                     />
                   </div>
                 ) : (
