@@ -7,7 +7,6 @@ interface TeamMember {
   bio?: string;
   photo?: string;
   photoClassName?: string;
-  shape?: 'circle' | 'rectangle';
 }
 
 const TEAM: TeamMember[] = [
@@ -16,7 +15,7 @@ const TEAM: TeamMember[] = [
     role: 'Co-Founder & Commercial Lead',
     bio: 'Leads product translation, market validation and commercial development, making sure the science becomes something families actually want.',
     photo: '/team/oluwabusayo-idowu.png',
-    shape: 'rectangle',
+    photoClassName: 'scale-125 object-top',
   },
   {
     name: 'Dr Rob Innie',
@@ -50,9 +49,6 @@ function initials(name: string): string {
 }
 
 export default function TeamStory() {
-  const featured = TEAM.find((member) => member.shape === 'rectangle');
-  const rest = TEAM.filter((member) => member.shape !== 'rectangle');
-
   return (
     <section className="relative bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
       <div className="max-w-2xl mx-auto text-center">
@@ -100,38 +96,18 @@ export default function TeamStory() {
         </div>
       </div>
 
-      <div className="mt-16 md:mt-20 max-w-5xl mx-auto border-t border-black/10 pt-16 md:pt-20">
-        {featured && (
-          <div className="flex flex-col items-center text-center mb-16 md:mb-20">
-            <div className="relative w-48 sm:w-56 md:w-64 aspect-[4/5] rounded-lg overflow-hidden bg-zneako-cream">
-              {featured.photo && (
-                <Image
-                  src={featured.photo}
-                  alt={featured.name}
-                  fill
-                  sizes="256px"
-                  className={`object-cover ${featured.photoClassName ?? 'scale-110 origin-top'}`}
-                />
-              )}
-            </div>
-            <p className="mt-5 font-display text-lg md:text-xl font-semibold text-zneako-black">
-              {featured.name}
-            </p>
-            <p className="mt-1 font-body text-sm text-black/55">{featured.role}</p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-3 gap-4 sm:gap-8 md:gap-14 max-w-3xl mx-auto">
-          {rest.map((member) => (
+      <div className="mt-16 md:mt-20 max-w-4xl mx-auto border-t border-black/10 pt-16 md:pt-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 sm:gap-x-8 md:gap-8">
+          {TEAM.map((member) => (
             <div key={member.name} className="text-center">
-              <div className="relative w-20 h-20 sm:w-32 sm:h-32 md:w-48 md:h-48 mx-auto rounded-full overflow-hidden flex items-center justify-center bg-zneako-cream ring-1 ring-black/5">
+              <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 mx-auto rounded-full overflow-hidden flex items-center justify-center bg-zneako-cream ring-1 ring-black/5">
                 {member.photo ? (
                   <div className="relative w-full h-full">
                     <Image
                       src={member.photo}
                       alt={member.name}
                       fill
-                      sizes="192px"
+                      sizes="160px"
                       className={`object-cover ${member.photoClassName ?? 'object-top'}`}
                     />
                   </div>
