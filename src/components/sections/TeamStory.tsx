@@ -15,7 +15,7 @@ const TEAM: TeamMember[] = [
     role: 'Co-Founder & Commercial Lead',
     bio: 'Leads product translation, market validation and commercial development, making sure the science becomes something families actually want.',
     photo: '/team/oluwabusayo-idowu.png',
-    photoClassName: 'scale-125 object-top',
+    photoClassName: 'scale-110 object-top',
   },
   {
     name: 'Dr Rob Innie',
