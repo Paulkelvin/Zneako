@@ -3,7 +3,7 @@ import { sanityServerClient } from '@/lib/sanityServer';
 import { isAuthorizedAdmin } from '@/lib/adminAuth';
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  if (!isAuthorizedAdmin(req)) {
+  if (!(await isAuthorizedAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

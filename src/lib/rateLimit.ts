@@ -2,6 +2,11 @@ import { NextRequest } from 'next/server';
 import { sanityServerClient } from '@/lib/sanityServer';
 
 export function getClientIp(req: NextRequest): string | null {
+  // x-vercel-forwarded-for is set by Vercel's edge network itself and can't
+  // be overridden by the client, unlike x-forwarded-for/x-real-ip which a
+  // request could in principle set directly. Prefer it where available.
+  const vercelForwarded = req.headers.get('x-vercel-forwarded-for');
+  if (vercelForwarded) return vercelForwarded.split(',')[0].trim();
   const forwarded = req.headers.get('x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0].trim();
   return req.headers.get('x-real-ip');

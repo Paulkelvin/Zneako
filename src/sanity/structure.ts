@@ -35,6 +35,7 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       ...S.documentTypeListItems().filter((item) => {
         const id = item.getId();
+        if (id === 'adminAuthAttempt') return false;
         return id ? !SINGLETON_TYPES.has(id) : true;
       }),
     ]);

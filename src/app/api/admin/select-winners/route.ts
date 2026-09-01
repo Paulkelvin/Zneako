@@ -14,7 +14,7 @@ type Signup = {
 // Recomputes selection from scratch every run, so it's safe to re-run as more
 // signups come in before the cutoff — it never just appends to a prior result.
 export async function POST(req: NextRequest) {
-  if (!isAuthorizedAdmin(req)) {
+  if (!(await isAuthorizedAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

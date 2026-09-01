@@ -7,6 +7,7 @@ import sustainabilitySection from './sustainabilitySection';
 import footerSection from './footerSection';
 import waitlistSignup from './waitlistSignup';
 import partnerInquiry from './partnerInquiry';
+import adminAuthAttempt from './adminAuthAttempt';
 
 export const schemaTypes = [
   heroSection,
@@ -18,6 +19,7 @@ export const schemaTypes = [
   footerSection,
   waitlistSignup,
   partnerInquiry,
+  adminAuthAttempt,
 ];
 
 // _id of each singleton document — shared between the Studio structure
