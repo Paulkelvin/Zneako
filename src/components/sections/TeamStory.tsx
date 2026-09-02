@@ -32,7 +32,7 @@ const TEAM: TeamMember[] = [
     photoClassName: 'scale-100 object-center',
   },
   {
-    name: 'Bonnie Clyde',
+    name: 'Bonnie Daniels',
     role: 'Innovation Officer',
     photo: '/team/bonnie-clyde.png',
     photoClassName: 'scale-100 object-center',

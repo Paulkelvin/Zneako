@@ -35,7 +35,7 @@ export function buildTeamStorySection(oluwabusayoPhotoAssetId: string | null) {
         role: 'Academic Co-Founder, Institute of Cancer Therapeutics',
         bio: 'Provides strategic oversight, ensuring alignment with research, innovation and commercialisation priorities.',
       },
-      { _key: 'bonnie-clyde', name: 'Bonnie Clyde', role: 'Innovation Officer' },
+      { _key: 'bonnie-clyde', name: 'Bonnie Daniels', role: 'Innovation Officer' },
     ],
   };
 }
