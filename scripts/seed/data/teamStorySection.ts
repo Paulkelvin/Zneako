@@ -25,7 +25,7 @@ export function buildTeamStorySection(oluwabusayoPhotoAssetId: string | null) {
       },
       {
         _key: 'rob-innie',
-        name: 'Dr Rob Innie',
+        name: 'Dr Rob Innes',
         role: 'CTO, Polymer Institute, University of Bradford',
         bio: 'Leads the technical work on rubber compounding, processing and prototype development.',
       },

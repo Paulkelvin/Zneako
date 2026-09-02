@@ -18,7 +18,7 @@ const TEAM: TeamMember[] = [
     photoClassName: 'scale-100 object-top',
   },
   {
-    name: 'Dr Rob Innie',
+    name: 'Dr Rob Innes',
     role: 'CTO, Polymer Institute, University of Bradford',
     bio: 'Leads the technical work on rubber compounding, processing and prototype development.',
     photo: '/team/rob-innie.png',
