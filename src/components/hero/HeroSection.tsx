@@ -7,6 +7,7 @@ import { useInViewport } from '@/hooks/useInViewport';
 import HeroOverlay from './HeroOverlay';
 import HeroStateLabel from './HeroStateLabel';
 import HeroStageFrame from './HeroStageFrame';
+import HeroSceneErrorBoundary from './HeroSceneErrorBoundary';
 
 const ScenePlaceholder = () => (
   <div className="absolute inset-0 bg-white flex items-center justify-center">
@@ -70,7 +71,9 @@ export default function HeroSection() {
       <div className="relative h-[56dvh] shrink-0 md:absolute md:inset-0 md:h-auto">
         <HeroStageFrame />
         {sceneReady ? (
-          <HeroScene progress={progress} playing={isVisible} />
+          <HeroSceneErrorBoundary>
+            <HeroScene progress={progress} playing={isVisible} />
+          </HeroSceneErrorBoundary>
         ) : (
           <ScenePlaceholder />
         )}

@@ -122,6 +122,18 @@ export default function HeroScene({ progress, playing }: HeroSceneProps) {
         width: '100%',
         height: '100%',
       }}
+      onCreated={({ gl }) => {
+        // Mobile browsers reclaim WebGL contexts far more readily than
+        // desktop (backgrounding the tab, memory pressure, thermal
+        // throttling). Without calling preventDefault() here, the browser
+        // won't even attempt to restore a lost context — the canvas just
+        // goes blank permanently until a full page reload.
+        gl.domElement.addEventListener(
+          'webglcontextlost',
+          (event) => event.preventDefault(),
+          false
+        );
+      }}
     >
       <CameraRig progress={progress} />
       <Suspense fallback={null}>
