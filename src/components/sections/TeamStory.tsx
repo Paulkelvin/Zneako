@@ -50,7 +50,7 @@ function initials(name: string): string {
 
 export default function TeamStory() {
   return (
-    <section className="relative bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
+    <section id="who-we-are" className="relative bg-white py-24 md:py-32 px-6 md:px-16 lg:px-24">
       <div className="max-w-2xl mx-auto text-center">
         <span className="font-body text-xs tracking-[0.2em] uppercase text-zneako-orange-deep">
           Our Story

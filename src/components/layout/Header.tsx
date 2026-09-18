@@ -16,6 +16,7 @@ import {
 const NAV_LINKS = [
   { label: 'Home', href: '#' },
   { label: 'Discover', href: '#discover' },
+  { label: 'Who We Are', href: '#who-we-are' },
   { label: 'Partner With Us', href: '#partner' },
 ];
 
