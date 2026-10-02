@@ -12,28 +12,28 @@ interface TeamMember {
 const TEAM: TeamMember[] = [
   {
     name: 'Oluwabusayo Idowu',
-    role: 'Co-Founder & Commercial Lead',
+    role: 'Chief Business Officer',
     bio: 'Leads product translation, market validation and commercial development, making sure the science becomes something families actually want.',
     photo: '/team/oluwabusayo-idowu.png',
     photoClassName: 'scale-100 object-top',
   },
   {
     name: 'Dr Rob Innes',
-    role: 'CTO, Polymer Institute, University of Bradford',
+    role: 'Chief Technology Officer',
     bio: 'Leads the technical work on rubber compounding, processing and prototype development.',
     photo: '/team/rob-innie.png',
     photoClassName: 'scale-100 object-center',
   },
   {
     name: 'Professor Klaus Pors',
-    role: 'Academic Co-Founder, Institute of Cancer Therapeutics',
+    role: 'Strategy & Innovation Lead',
     bio: 'Provides strategic oversight, ensuring alignment with research, innovation and commercialisation priorities.',
     photo: '/team/klaus-pors.png',
     photoClassName: 'scale-100 object-center',
   },
   {
     name: 'Bonnie Daniels',
-    role: 'Innovation Officer',
+    role: 'Brand & Marketing Lead',
     photo: '/team/bonnie-clyde.png',
     photoClassName: 'scale-100 object-center',
   },
@@ -63,10 +63,9 @@ export default function TeamStory() {
 
         <p className="mt-6 font-body text-sm md:text-base text-black/65 leading-relaxed">
           Zneako started with a simple, uncomfortable fact: the UK throws away over 600,000
-          tonnes of tyres every year, much of it incinerated or dumped rather than reused. In
-          2020, an illegal tyre stockpile fire in Bradford made that risk impossible to ignore. We
-          asked a different question: what if that waste wasn&apos;t a disposal problem, but a
-          material waiting for a second life?
+          tonnes of tyres every year, much of it incinerated, landfilled or illegally dumped
+          rather than reused. We asked a different question: what if that waste wasn&apos;t a
+          disposal problem, but a material waiting for a second life?
         </p>
         <p className="mt-4 font-body text-sm md:text-base text-black/65 leading-relaxed">
           Working with rubber-recycling researchers at the University of Bradford&apos;s Polymer
@@ -91,7 +90,7 @@ export default function TeamStory() {
             <Award className="w-3 h-3 md:w-3.5 md:h-3.5 text-zneako-black" strokeWidth={2} />
           </span>
           <span className="font-body text-[10.5px] md:text-xs text-black/70 whitespace-nowrap">
-            Recipient of a rapid funding grant to support prototyping
+            Recipient of a RAPID funding grant to support prototyping
           </span>
         </div>
       </div>
