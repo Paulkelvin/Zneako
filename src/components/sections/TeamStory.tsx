@@ -61,7 +61,12 @@ export default function TeamStory() {
           THE PURPOSE.
         </h2>
 
-        <p className="mt-6 font-body text-sm md:text-base text-black/65 leading-relaxed">
+        <p className="mt-6 font-body text-base md:text-lg font-medium text-zneako-black leading-relaxed">
+          Do you drive? Take the bus? Grab a taxi home? Then you&apos;ve ridden on tyres. Ever
+          wondered where they go when they wear out? Probably not. We did. Zneako turns old
+          tyres into shoe soles. And guess what? Our soles have done more miles than you have.
+        </p>
+        <p className="mt-4 font-body text-sm md:text-base text-black/65 leading-relaxed">
           Zneako started with a simple, uncomfortable fact: the UK throws away over 600,000
           tonnes of tyres every year, much of it incinerated, landfilled or illegally dumped
           rather than reused. We asked a different question: what if that waste wasn&apos;t a
